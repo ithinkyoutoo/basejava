@@ -6,7 +6,9 @@ import java.util.Arrays;
 
 public class ArrayStorage {
 
-    private final Resume[] storage = new Resume[10000];
+    private static final int CAPACITY = 10_000;
+
+    private final Resume[] storage = new Resume[CAPACITY];
     private int countResume;
 
     public void clear() {
@@ -14,26 +16,53 @@ public class ArrayStorage {
         countResume = 0;
     }
 
-    public void save(Resume r) {
-        storage[countResume++] = r;
+    public void update(Resume resume) {
+        String uuid = resume.getUuid();
+        if (hasResume(uuid)) {
+            for (int i = 0; i < countResume; i++) {
+                if (uuid.equals(storage[i].getUuid())) {
+                    storage[i] = resume;
+                }
+            }
+        } else {
+            printError(uuid);
+        }
+    }
+
+    public void save(Resume resume) {
+        String uuid = resume.getUuid();
+        if (countResume == CAPACITY) {
+            System.out.println("Хранилище заполнено, вы не можете добавить новое резюме");
+        } else if (hasResume(uuid)) {
+            System.out.println("Резюме " + uuid + " уже существует");
+        } else {
+            storage[countResume++] = resume;
+        }
     }
 
     public Resume get(String uuid) {
-        for (int i = 0; i < countResume; i++) {
-            if (uuid.equals(storage[i].getUuid())) {
-                return storage[i];
+        if (hasResume(uuid)) {
+            for (int i = 0; i < countResume; i++) {
+                if (uuid.equals(storage[i].getUuid())) {
+                    return storage[i];
+                }
             }
         }
+        printError(uuid);
         return null;
     }
 
     public void delete(String uuid) {
-        for (int i = 0; i < countResume; i++) {
-            if (uuid.equals(storage[i].getUuid())) {
-                countResume--;
-                System.arraycopy(storage, i + 1, storage, i, countResume - i);
-                storage[countResume] = null;
+        if (hasResume(uuid)) {
+            for (int i = 0; i < countResume; i++) {
+                if (uuid.equals(storage[i].getUuid())) {
+                    countResume--;
+                    System.arraycopy(storage, i + 1, storage, i, countResume - i);
+                    storage[countResume] = null;
+                }
             }
+        } else {
+            printError(uuid);
         }
     }
 
@@ -43,5 +72,18 @@ public class ArrayStorage {
 
     public int size() {
         return countResume;
+    }
+
+    private boolean hasResume(String uuid) {
+        for (Resume resume : getAll()) {
+            if (uuid.equals(resume.getUuid())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private void printError(String uuid) {
+        System.out.println("Резюме " + uuid + " не найдено");
     }
 }
