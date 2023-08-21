@@ -28,10 +28,9 @@ public class ArrayStorage {
 
     public void save(Resume resume) {
         String uuid = resume.getUuid();
-        int index = findIndex(uuid);
         if (countResume == CAPACITY) {
             System.out.println("Хранилище заполнено, вы не можете добавить новое резюме");
-        } else if (index >= 0) {
+        } else if (findIndex(uuid) >= 0) {
             System.out.println("Резюме " + uuid + " уже существует");
         } else {
             storage[countResume++] = resume;
