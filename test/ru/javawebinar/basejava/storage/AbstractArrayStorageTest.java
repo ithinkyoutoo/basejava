@@ -12,6 +12,7 @@ import static ru.javawebinar.basejava.storage.AbstractArrayStorage.CAPACITY;
 
 public abstract class AbstractArrayStorageTest {
 
+    private static final String DUMMY = "dummy";
     private static final String UUID_1 = "uuid1";
     private static final String UUID_2 = "uuid2";
     private static final String UUID_3 = "uuid3";
@@ -31,19 +32,16 @@ public abstract class AbstractArrayStorageTest {
     public void setUp() {
         storage.clear();
         storage.save(RESUME_1);
-        assertGet(RESUME_1);
         storage.save(RESUME_2);
-        assertGet(RESUME_2);
         storage.save(RESUME_3);
-        assertGet(RESUME_3);
     }
 
     @Test
     public void clear() {
         storage.clear();
+        assertSize(0);
         Resume[] resumes = {};
         assertArrayEquals(resumes, storage.getAll());
-        assertSize(getLength());
     }
 
     @Test
@@ -92,11 +90,11 @@ public abstract class AbstractArrayStorageTest {
 
     @Test(expected = NotExistStorageException.class)
     public void getNotExist() {
-        storage.get("dummy");
+        storage.get(DUMMY);
     }
 
     @Test(expected = ExistStorageException.class)
-    public void getExist() {
+    public void saveExist() {
         storage.save(new Resume(UUID_1));
     }
 
