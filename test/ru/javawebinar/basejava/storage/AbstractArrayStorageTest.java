@@ -105,6 +105,11 @@ public abstract class AbstractArrayStorageTest {
         storage.get(UUID_2);
     }
 
+    @Test(expected = NotExistStorageException.class)
+    public void deleteNotExist() {
+        storage.delete(DUMMY);
+    }
+
     @Test
     public void getAll() {
         Resume[] expected = {RESUME_1, RESUME_2, RESUME_3};
