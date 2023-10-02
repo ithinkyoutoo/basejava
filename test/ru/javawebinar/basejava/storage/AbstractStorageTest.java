@@ -10,7 +10,7 @@ import ru.javawebinar.basejava.model.Resume;
 import static org.junit.Assert.*;
 import static ru.javawebinar.basejava.storage.AbstractArrayStorage.CAPACITY;
 
-public abstract class AbstractArrayStorageTest {
+public abstract class AbstractStorageTest {
 
     private static final String DUMMY = "dummy";
     private static final String UUID_1 = "uuid1";
@@ -24,7 +24,7 @@ public abstract class AbstractArrayStorageTest {
 
     private final Storage storage;
 
-    public AbstractArrayStorageTest(Storage storage) {
+    public AbstractStorageTest(Storage storage) {
         this.storage = storage;
     }
 
