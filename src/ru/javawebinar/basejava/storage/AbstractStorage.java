@@ -2,7 +2,6 @@ package ru.javawebinar.basejava.storage;
 
 import ru.javawebinar.basejava.exception.ExistStorageException;
 import ru.javawebinar.basejava.exception.NotExistStorageException;
-import ru.javawebinar.basejava.exception.StorageException;
 import ru.javawebinar.basejava.model.Resume;
 
 public abstract class AbstractStorage implements Storage {
@@ -10,48 +9,50 @@ public abstract class AbstractStorage implements Storage {
     public abstract void clear();
 
     public final void update(Resume resume) {
-        String uuid = resume.getUuid();
-        int index = findIndex(uuid);
-        if (index < 0) {
-            throw new NotExistStorageException(uuid);
-        } else {
-            setResume(resume, index);
-        }
+        update(resume, getExistingSearchKey(resume.getUuid()));
     }
 
     public final void save(Resume resume) {
-        String uuid = resume.getUuid();
-        int index = findIndex(uuid);
-        if (hasNotCapacity()) {
-            throw new StorageException("Хранилище заполнено, вы не можете добавить новое резюме", uuid);
-        } else if (index >= 0) {
-            throw new ExistStorageException(uuid);
-        } else {
-            saveResume(resume, index);
-        }
+        save(resume, getNotExistingSearchKey(resume.getUuid()));
     }
 
     public final Resume get(String uuid) {
-        int index = findIndex(uuid);
-        if (index < 0) {
-            throw new NotExistStorageException(uuid);
-        }
-        return getResume(index);
+        return get(uuid, getExistingSearchKey(uuid));
     }
 
-    public abstract void delete(String uuid);
+    public final void delete(String uuid){
+        delete(uuid, getExistingSearchKey(uuid));
+    }
 
     public abstract Resume[] getAll();
 
     public abstract int size();
 
-    protected abstract int findIndex(String uuid);
+    protected abstract void update(Resume resume, Object searchKey);
 
-    protected abstract void setResume(Resume resume, int index);
+    protected abstract void save(Resume resume, Object searchKey);
 
-    protected abstract boolean hasNotCapacity();
+    protected abstract Resume get(String uuid, Object searchKey);
 
-    protected abstract void saveResume(Resume resume, int index);
+    protected abstract void delete(String uuid, Object searchKey);
 
-    protected abstract Resume getResume(int index);
+    protected abstract Object findIndex(String uuid);
+
+    protected abstract boolean isExist(Object searchKey);
+
+    private Object getExistingSearchKey(String uuid) {
+        Object searchKey = findIndex(uuid);
+        if (isExist(searchKey)) {
+            throw new NotExistStorageException(uuid);
+        }
+        return searchKey;
+    }
+
+    private Object getNotExistingSearchKey(String uuid) {
+        Object searchKey = findIndex(uuid);
+        if (!isExist(searchKey)) {
+            throw new ExistStorageException(uuid);
+        }
+        return searchKey;
+    }
 }
