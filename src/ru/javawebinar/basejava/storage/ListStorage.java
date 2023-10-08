@@ -1,12 +1,9 @@
 package ru.javawebinar.basejava.storage;
 
-import ru.javawebinar.basejava.exception.NotExistStorageException;
 import ru.javawebinar.basejava.model.Resume;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.ListIterator;
-import java.util.Objects;
 
 public class ListStorage extends AbstractStorage {
 
@@ -14,18 +11,6 @@ public class ListStorage extends AbstractStorage {
 
     public void clear() {
         storage.clear();
-    }
-
-    public final void delete(String uuid) {
-        ListIterator<Resume> iterator = storage.listIterator();
-        while (iterator.hasNext()) {
-            Resume resume = iterator.next();
-            if (Objects.equals(resume.getUuid(), uuid)) {
-                iterator.remove();
-                return;
-            }
-        }
-        throw new NotExistStorageException(uuid);
     }
 
     public Resume[] getAll() {
@@ -36,24 +21,32 @@ public class ListStorage extends AbstractStorage {
         return storage.size();
     }
 
-    protected int findIndex(String uuid) {
-        Resume resume = new Resume(uuid);
-        return storage.indexOf(resume);
+    protected void update(Resume resume, Object searchKey) {
+        storage.set((int) searchKey, resume);
     }
 
-    protected void setResume(Resume resume, int index) {
-        storage.set(index, resume);
-    }
-
-    protected boolean hasNotCapacity() {
-        return false;
-    }
-
-    protected void saveResume(Resume resume, int index) {
+    protected void save(Resume resume, Object searchKey) {
         storage.add(resume);
     }
 
-    protected Resume getResume(int index) {
-        return storage.get(index);
+    protected Resume get(String uuid, Object searchKey) {
+        return storage.get((int) searchKey);
+    }
+
+    protected void delete(String uuid, Object searchKey) {
+        storage.remove((int) searchKey);
+    }
+
+    protected Object findIndex(String uuid) {
+        for (int i = 0; i < storage.size(); i++) {
+            if (uuid.equals(storage.get(i).getUuid())) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    protected boolean isExist(Object searchKey) {
+        return (int) searchKey < 0;
     }
 }
