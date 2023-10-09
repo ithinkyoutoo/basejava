@@ -21,23 +21,23 @@ public class ListStorage extends AbstractStorage {
         return storage.size();
     }
 
-    protected void update(Resume resume, Object searchKey) {
+    protected void doUpdate(Resume resume, Object searchKey) {
         storage.set((int) searchKey, resume);
     }
 
-    protected void save(Resume resume, Object searchKey) {
+    protected void doSave(Resume resume, Object searchKey) {
         storage.add(resume);
     }
 
-    protected Resume get(String uuid, Object searchKey) {
+    protected Resume doGet(Object searchKey) {
         return storage.get((int) searchKey);
     }
 
-    protected void delete(String uuid, Object searchKey) {
+    protected void doDelete(Object searchKey) {
         storage.remove((int) searchKey);
     }
 
-    protected Object findIndex(String uuid) {
+    protected Object findSearchKey(String uuid) {
         for (int i = 0; i < storage.size(); i++) {
             if (uuid.equals(storage.get(i).getUuid())) {
                 return i;

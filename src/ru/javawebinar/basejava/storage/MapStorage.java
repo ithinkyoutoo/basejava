@@ -22,23 +22,23 @@ public class MapStorage extends AbstractStorage {
         return storage.size();
     }
 
-    protected void update(Resume resume, Object searchKey) {
+    protected void doUpdate(Resume resume, Object searchKey) {
         storage.put(resume.getUuid(), resume);
     }
 
-    protected void save(Resume resume, Object searchKey) {
+    protected void doSave(Resume resume, Object searchKey) {
         storage.put(resume.getUuid(), resume);
     }
 
-    protected Resume get(String uuid, Object searchKey) {
-        return storage.get(uuid);
+    protected Resume doGet(Object searchKey) {
+        return storage.get((String) searchKey);
     }
 
-    protected void delete(String uuid, Object searchKey) {
-        storage.remove(uuid);
+    protected void doDelete(Object searchKey) {
+        storage.remove((String) searchKey);
     }
 
-    protected Object findIndex(String uuid) {
+    protected Object findSearchKey(String uuid) {
         for (Map.Entry<String, Resume> entry : storage.entrySet()) {
             if (uuid.equals(entry.getKey())) {
                 return uuid;

@@ -25,11 +25,11 @@ public abstract class AbstractArrayStorage extends AbstractStorage {
         return countResume;
     }
 
-    protected void update(Resume resume, Object searchKey) {
+    protected void doUpdate(Resume resume, Object searchKey) {
         storage[(int) searchKey] = resume;
     }
 
-    protected void save(Resume resume, Object searchKey) {
+    protected void doSave(Resume resume, Object searchKey) {
         if (countResume == CAPACITY) {
             throw new StorageException("Хранилище заполнено, вы не можете добавить новое резюме", resume.getUuid());
         } else {
@@ -38,11 +38,11 @@ public abstract class AbstractArrayStorage extends AbstractStorage {
         }
     }
 
-    protected Resume get(String uuid, Object searchKey) {
+    protected Resume doGet(Object searchKey) {
         return storage[(int) searchKey];
     }
 
-    protected void delete(String uuid, Object searchKey) {
+    protected void doDelete(Object searchKey) {
         countResume--;
         deleteResume((int) searchKey);
         storage[countResume] = null;
@@ -52,7 +52,7 @@ public abstract class AbstractArrayStorage extends AbstractStorage {
         return (int) searchKey < 0;
     }
 
-    protected abstract Object findIndex(String uuid);
+    protected abstract Object findSearchKey(String uuid);
 
     protected abstract void deleteResume(int index);
 

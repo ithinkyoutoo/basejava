@@ -5,7 +5,7 @@ import ru.javawebinar.basejava.model.Resume;
 public class ArrayStorage extends AbstractArrayStorage {
 
     @Override
-    protected Object findIndex(String uuid) {
+    protected Object findSearchKey(String uuid) {
         for (int i = 0; i < countResume; i++) {
             if (uuid.equals(storage[i].getUuid())) {
                 return i;
