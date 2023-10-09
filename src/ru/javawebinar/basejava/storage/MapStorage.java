@@ -4,7 +4,6 @@ import ru.javawebinar.basejava.model.Resume;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 
 public class MapStorage extends AbstractStorage {
 
@@ -23,11 +22,11 @@ public class MapStorage extends AbstractStorage {
     }
 
     protected void doUpdate(Resume resume, Object searchKey) {
-        storage.put(resume.getUuid(), resume);
+        storage.put((String) searchKey, resume);
     }
 
     protected void doSave(Resume resume, Object searchKey) {
-        storage.put(resume.getUuid(), resume);
+        storage.put((String) searchKey, resume);
     }
 
     protected Resume doGet(Object searchKey) {
@@ -39,15 +38,10 @@ public class MapStorage extends AbstractStorage {
     }
 
     protected Object findSearchKey(String uuid) {
-        for (Map.Entry<String, Resume> entry : storage.entrySet()) {
-            if (uuid.equals(entry.getKey())) {
-                return uuid;
-            }
-        }
-        return null;
+        return uuid;
     }
 
     protected boolean isExist(Object searchKey) {
-        return Objects.equals(searchKey, null);
+        return !storage.containsKey((String) searchKey);
     }
 }
