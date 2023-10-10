@@ -49,7 +49,7 @@ public abstract class AbstractArrayStorage extends AbstractStorage {
     }
 
     protected boolean isExist(Object searchKey) {
-        return (int) searchKey < 0;
+        return (int) searchKey >= 0;
     }
 
     protected abstract Object findSearchKey(String uuid);
