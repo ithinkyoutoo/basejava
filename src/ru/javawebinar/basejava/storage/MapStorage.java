@@ -42,6 +42,6 @@ public class MapStorage extends AbstractStorage {
     }
 
     protected boolean isExist(Object searchKey) {
-        return !storage.containsKey((String) searchKey);
+        return storage.containsKey((String) searchKey);
     }
 }
