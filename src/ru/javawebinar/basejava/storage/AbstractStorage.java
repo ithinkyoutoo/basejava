@@ -24,14 +24,14 @@ public abstract class AbstractStorage implements Storage {
         return doGet(getExistingSearchKey(uuid));
     }
 
-    public final void delete(String uuid){
+    public final void delete(String uuid) {
         doDelete(getExistingSearchKey(uuid));
     }
 
     public final List<Resume> getAllSorted() {
-        List<Resume> r = doGetAll();
-        r.sort(RESUME_COMPARATOR);
-        return r;
+        List<Resume> resume = doGetAll();
+        resume.sort(RESUME_COMPARATOR);
+        return resume;
     }
 
     protected abstract void doUpdate(Resume resume, Object searchKey);
