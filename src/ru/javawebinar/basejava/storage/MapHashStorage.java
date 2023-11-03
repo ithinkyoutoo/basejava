@@ -9,7 +9,7 @@ import java.util.Map;
 
 public class MapHashStorage extends AbstractStorage {
 
-    private final Map<Integer, Resume> storage = new HashMap<>();
+    private final Map<String, Resume> storage = new HashMap<>();
 
     public void clear() {
         storage.clear();
@@ -21,23 +21,24 @@ public class MapHashStorage extends AbstractStorage {
 
     @Override
     protected void doUpdate(Resume resume, Object searchKey) {
-        storage.put(resume.hashCode(), resume);
-        doDelete(searchKey);
+        storage.put(resume.getUuid(), resume);
     }
 
     @Override
     protected void doSave(Resume resume, Object searchKey) {
-        storage.put(resume.hashCode(), resume);
+        storage.put(resume.getUuid(), resume);
     }
 
     @Override
     protected Resume doGet(Object searchKey) {
-        return storage.get((Integer) searchKey);
+        Resume resume = (Resume) searchKey;
+        return storage.get(resume.getUuid());
     }
 
     @Override
     protected void doDelete(Object searchKey) {
-        storage.remove((Integer) searchKey);
+        Resume resume = (Resume) searchKey;
+        storage.remove(resume.getUuid());
     }
 
     @Override
@@ -47,16 +48,11 @@ public class MapHashStorage extends AbstractStorage {
 
     @Override
     protected Object findSearchKey(String uuid) {
-        for (Map.Entry<Integer, Resume> entry : storage.entrySet()) {
-            if (uuid.equals(entry.getValue().getUuid())) {
-                return entry.getValue().hashCode();
-            }
-        }
-        return null;
+        return storage.get(uuid);
     }
 
     @Override
     protected boolean isExist(Object searchKey) {
-        return storage.containsKey((Integer) searchKey);
+        return searchKey != null;
     }
 }
