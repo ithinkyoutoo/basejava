@@ -8,16 +8,17 @@ public class Resume {
     private final String uuid;
     private String fullName;
 
-    public Resume() {
-        this(UUID.randomUUID().toString());
-    }
+//    public Resume() {
+//        this.uuid = UUID.randomUUID().toString();
+//    }
 
     public Resume(String fullName) {
-        this.fullName = fullName;
-        this.uuid = UUID.randomUUID().toString();
+        this(UUID.randomUUID().toString(), fullName);
     }
 
     public Resume(String uuid, String fullName) {
+        Objects.requireNonNull(uuid, "uuid must not be null");
+        Objects.requireNonNull(fullName, "name must not be null");
         this.uuid = uuid;
         this.fullName = fullName;
     }
@@ -27,6 +28,7 @@ public class Resume {
     }
 
     public void setFullName(String fullName) {
+        Objects.requireNonNull(fullName, "name must not be null");
         this.fullName = fullName;
     }
 
@@ -42,13 +44,13 @@ public class Resume {
         Resume resume = (Resume) o;
 
         if (!uuid.equals(resume.uuid)) return false;
-        return Objects.equals(fullName, resume.fullName);
+        return fullName.equals(resume.fullName);
     }
 
     @Override
     public int hashCode() {
         int result = uuid.hashCode();
-        result = 31 * result + (fullName != null ? fullName.hashCode() : 0);
+        result = 31 * result + fullName.hashCode();
         return result;
     }
 
