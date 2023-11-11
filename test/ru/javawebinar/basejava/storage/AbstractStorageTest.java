@@ -111,14 +111,14 @@ public abstract class AbstractStorageTest {
 
     @Test
     public void getAllSorted() {
-        Resume[] expected = {RESUME_1, RESUME_2, RESUME_3};
-        assertArray(expected);
+        List<Resume> expected = List.of(RESUME_1, RESUME_2, RESUME_3);
+        assertList(expected);
         RESUME_2.setFullName(FULL_NAME_1);
         RESUME_3.setFullName(FULL_NAME_1);
-        assertArray(expected);
+        assertList(expected);
+        expected = List.of(RESUME_2, RESUME_3, RESUME_1);
         RESUME_1.setFullName(FULL_NAME_3);
-        Resume[] expected2 = {RESUME_2, RESUME_3, RESUME_1};
-        assertArray(expected2);
+        assertList(expected);
     }
 
     @Test
@@ -142,7 +142,7 @@ public abstract class AbstractStorageTest {
         assertEquals(resume, storage.get(resume.getUuid()));
     }
 
-    private void assertArray(Resume[] expected) {
-        assertArrayEquals(expected, storage.getAllSorted().toArray());
+    private void assertList(List<Resume> expected) {
+        assertEquals(expected, storage.getAllSorted());
     }
 }
