@@ -6,7 +6,7 @@ import ru.javawebinar.basejava.model.Resume;
 import java.util.Arrays;
 import java.util.List;
 
-public abstract class AbstractArrayStorage extends AbstractStorage {
+public abstract class AbstractArrayStorage extends AbstractStorage<Integer> {
 
     protected static final int CAPACITY = 10_000;
 
@@ -23,29 +23,29 @@ public abstract class AbstractArrayStorage extends AbstractStorage {
     }
 
     @Override
-    protected void doUpdate(Resume resume, Object searchKey) {
-        storage[(int) searchKey] = resume;
+    protected void doUpdate(Resume resume, Integer searchKey) {
+        storage[searchKey] = resume;
     }
 
     @Override
-    protected void doSave(Resume resume, Object searchKey) {
+    protected void doSave(Resume resume, Integer searchKey) {
         if (countResume == CAPACITY) {
             throw new StorageException("Хранилище заполнено, вы не можете добавить новое резюме", resume.getUuid());
         } else {
-            saveResume(resume, (int) searchKey);
+            saveResume(resume, searchKey);
             countResume++;
         }
     }
 
     @Override
-    protected Resume doGet(Object searchKey) {
-        return storage[(int) searchKey];
+    protected Resume doGet(Integer searchKey) {
+        return storage[searchKey];
     }
 
     @Override
-    protected void doDelete(Object searchKey) {
+    protected void doDelete(Integer searchKey) {
         countResume--;
-        deleteResume((int) searchKey);
+        deleteResume(searchKey);
         storage[countResume] = null;
     }
 
@@ -55,12 +55,12 @@ public abstract class AbstractArrayStorage extends AbstractStorage {
     }
 
     @Override
-    protected boolean isExist(Object searchKey) {
-        return (int) searchKey >= 0;
+    protected boolean isExist(Integer searchKey) {
+        return searchKey >= 0;
     }
 
     @Override
-    protected abstract Object findSearchKey(String uuid);
+    protected abstract Integer findSearchKey(String uuid);
 
     protected abstract void deleteResume(int searchKey);
 
