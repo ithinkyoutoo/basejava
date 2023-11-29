@@ -1,5 +1,7 @@
 package ru.javawebinar.basejava.model;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -7,6 +9,8 @@ public class Resume {
 
     private final String uuid;
     private String fullName;
+    private Map<ContactType, String> contacts;
+    private Map<SectionType, Section> sections;
 
 //    public Resume() {
 //        this.uuid = UUID.randomUUID().toString();
@@ -14,6 +18,8 @@ public class Resume {
 
     public Resume(String fullName) {
         this(UUID.randomUUID().toString(), fullName);
+        contacts = new HashMap<>();
+        sections = new HashMap<>();
     }
 
     public Resume(String uuid, String fullName) {
@@ -36,6 +42,22 @@ public class Resume {
         return fullName;
     }
 
+    public void setContacts(Map<ContactType, String> contacts) {
+        this.contacts = contacts;
+    }
+
+    public Map<ContactType, String> getContacts() {
+        return contacts;
+    }
+
+    public void setSections(Map<SectionType, Section> sections) {
+        this.sections = sections;
+    }
+
+    public Map<SectionType, Section> getSections() {
+        return sections;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -44,13 +66,17 @@ public class Resume {
         Resume resume = (Resume) o;
 
         if (!uuid.equals(resume.uuid)) return false;
-        return fullName.equals(resume.fullName);
+        if (!fullName.equals(resume.fullName)) return false;
+        if (!Objects.equals(contacts, resume.contacts)) return false;
+        return Objects.equals(sections, resume.sections);
     }
 
     @Override
     public int hashCode() {
         int result = uuid.hashCode();
         result = 31 * result + fullName.hashCode();
+        result = 31 * result + (contacts != null ? contacts.hashCode() : 0);
+        result = 31 * result + (sections != null ? sections.hashCode() : 0);
         return result;
     }
 
