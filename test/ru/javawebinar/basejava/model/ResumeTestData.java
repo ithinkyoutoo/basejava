@@ -1,5 +1,7 @@
 package ru.javawebinar.basejava.model;
 
+import java.time.Month;
+import java.time.YearMonth;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -75,24 +77,27 @@ public class ResumeTestData {
     }
 
     private static Company getCompany1() {
-        Period period = new Period();
-        period.setBeginDate("10/2013");
-        period.setEndDate("Сейчас");
-        period.setTitle("Автор проекта");
-        period.setDescription("Создание, организация и проведение Java онлайн проектов и стажировок.");
-        List<Period> periods = new ArrayList<>();
-        periods.add(period);
         Company company = new Company();
         company.setName("Java Online Projects");
         company.setWebsite("www.javaops.ru");
+        Company.Period period = new Company.Period();
+        period.setBeginDate(YearMonth.of(2013, Month.JANUARY));
+        period.setEndDate(null);
+        period.setTitle("Автор проекта");
+        period.setDescription("Создание, организация и проведение Java онлайн проектов и стажировок.");
+        List<Company.Period> periods = new ArrayList<>();
+        periods.add(period);
         company.setPeriods(periods);
         return company;
     }
 
     private static Company getCompany2() {
-        Period period = new Period();
-        period.setBeginDate("10/2014");
-        period.setEndDate("01/2016");
+        Company company = new Company();
+        company.setName("Wrike");
+        company.setWebsite("www.wrike.co");
+        Company.Period period = new Company.Period();
+        period.setBeginDate(YearMonth.of(2014, Month.OCTOBER));
+        period.setEndDate(YearMonth.of(2016, Month.JANUARY));
         period.setTitle("Старший разработчик (backend)");
         String description = """
                 Проектирование и разработка онлайн платформы управления проектами Wrike (Java 8 API, Maven, Spring,\s
@@ -100,39 +105,36 @@ public class ResumeTestData {
                 OAuth2, JWT SSO.
                 """;
         period.setDescription(description);
-        List<Period> periods = new ArrayList<>();
+        List<Company.Period> periods = new ArrayList<>();
         periods.add(period);
-        Company company = new Company();
-        company.setName("Wrike");
-        company.setWebsite("www.wrike.co");
         company.setPeriods(periods);
         return company;
     }
 
     private static Company getCompany3() {
-        Period period = new Period();
-        period.setBeginDate("03/2013");
-        period.setEndDate("05/2013");
-        period.setTitle("'Functional Programming Principles in Scala' by Martin Odersky");
-        List<Period> periods = new ArrayList<>();
-        periods.add(period);
         Company company = new Company();
         company.setName("Coursera");
         company.setWebsite("www.coursera.org/learn/progfun1");
+        Company.Period period = new Company.Period();
+        period.setBeginDate(YearMonth.of(2013, Month.MARCH));
+        period.setEndDate(YearMonth.of(2013, Month.MAY));
+        period.setTitle("'Functional Programming Principles in Scala' by Martin Odersky");
+        List<Company.Period> periods = new ArrayList<>();
+        periods.add(period);
         company.setPeriods(periods);
         return company;
     }
 
     private static Company getCompany4() {
-        Period period = new Period();
-        period.setBeginDate("03/2011");
-        period.setEndDate("04/2011");
-        period.setTitle("Курс 'Объектно-ориентированный анализ ИС. Концептуальное моделирование на UML.'");
-        List<Period> periods = new ArrayList<>();
-        periods.add(period);
         Company company = new Company();
         company.setName("Luxoft");
         company.setWebsite("www.luxoft-training.ru/training/catalog/course.html?ID=22366");
+        Company.Period period = new Company.Period();
+        period.setBeginDate(YearMonth.of(2011, Month.MARCH));
+        period.setEndDate(YearMonth.of(2011, Month.APRIL));
+        period.setTitle("Курс 'Объектно-ориентированный анализ ИС. Концептуальное моделирование на UML.'");
+        List<Company.Period> periods = new ArrayList<>();
+        periods.add(period);
         company.setPeriods(periods);
         return company;
     }
@@ -175,8 +177,9 @@ public class ResumeTestData {
         CompanySection list = (CompanySection) entry.getValue();
         for (Company c : list.getCompanies()) {
             System.out.println("\n" + c.getName() + " " + c.getWebsite());
-            for (Period p : c.getPeriods()) {
-                System.out.println(p.getBeginDate() + " - " + p.getEndDate() + "\n" + p.getTitle());
+            for (Company.Period p : c.getPeriods()) {
+                System.out.println(p.getBeginDate() + " - " + (p.getEndDate() != null ? p.getEndDate() : "Сейчас"));
+                System.out.println(p.getTitle());
                 if (p.getDescription() != null) {
                     System.out.println(p.getDescription());
                 }
