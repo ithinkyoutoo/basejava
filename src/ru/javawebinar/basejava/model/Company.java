@@ -1,6 +1,6 @@
 package ru.javawebinar.basejava.model;
 
-import java.time.YearMonth;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
 
@@ -65,24 +65,24 @@ public class Company {
 
     public static class Period {
 
-        private YearMonth beginDate;
-        private YearMonth endDate;
+        private LocalDate beginDate;
+        private LocalDate endDate;
         private String title;
         private String description;
 
-        public void setBeginDate(YearMonth beginDate) {
+        public void setBeginDate(LocalDate beginDate) {
             this.beginDate = beginDate;
         }
 
-        public YearMonth getBeginDate() {
+        public LocalDate getBeginDate() {
             return beginDate;
         }
 
-        public void setEndDate(YearMonth endDate) {
+        public void setEndDate(LocalDate endDate) {
             this.endDate = endDate;
         }
 
-        public YearMonth getEndDate() {
+        public LocalDate getEndDate() {
             return endDate;
         }
 

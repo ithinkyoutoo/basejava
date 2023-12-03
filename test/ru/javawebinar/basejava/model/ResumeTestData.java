@@ -1,7 +1,6 @@
 package ru.javawebinar.basejava.model;
 
-import java.time.Month;
-import java.time.YearMonth;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -81,7 +80,7 @@ public class ResumeTestData {
         company.setName("Java Online Projects");
         company.setWebsite("www.javaops.ru");
         Company.Period period = new Company.Period();
-        period.setBeginDate(YearMonth.of(2013, Month.JANUARY));
+        period.setBeginDate(LocalDate.of(2013, 10, 1));
         period.setEndDate(null);
         period.setTitle("Автор проекта");
         period.setDescription("Создание, организация и проведение Java онлайн проектов и стажировок.");
@@ -96,8 +95,8 @@ public class ResumeTestData {
         company.setName("Wrike");
         company.setWebsite("www.wrike.co");
         Company.Period period = new Company.Period();
-        period.setBeginDate(YearMonth.of(2014, Month.OCTOBER));
-        period.setEndDate(YearMonth.of(2016, Month.JANUARY));
+        period.setBeginDate(LocalDate.of(2014, 10, 1));
+        period.setEndDate(LocalDate.of(2016, 1, 1));
         period.setTitle("Старший разработчик (backend)");
         String description = """
                 Проектирование и разработка онлайн платформы управления проектами Wrike (Java 8 API, Maven, Spring,\s
@@ -116,8 +115,8 @@ public class ResumeTestData {
         company.setName("Coursera");
         company.setWebsite("www.coursera.org/learn/progfun1");
         Company.Period period = new Company.Period();
-        period.setBeginDate(YearMonth.of(2013, Month.MARCH));
-        period.setEndDate(YearMonth.of(2013, Month.MAY));
+        period.setBeginDate(LocalDate.of(2013, 3, 1));
+        period.setEndDate(LocalDate.of(2013, 5, 1));
         period.setTitle("'Functional Programming Principles in Scala' by Martin Odersky");
         List<Company.Period> periods = new ArrayList<>();
         periods.add(period);
@@ -130,8 +129,8 @@ public class ResumeTestData {
         company.setName("Luxoft");
         company.setWebsite("www.luxoft-training.ru/training/catalog/course.html?ID=22366");
         Company.Period period = new Company.Period();
-        period.setBeginDate(YearMonth.of(2011, Month.MARCH));
-        period.setEndDate(YearMonth.of(2011, Month.APRIL));
+        period.setBeginDate(LocalDate.of(2011, 3, 1));
+        period.setEndDate(LocalDate.of(2011, 4, 1));
         period.setTitle("Курс 'Объектно-ориентированный анализ ИС. Концептуальное моделирование на UML.'");
         List<Company.Period> periods = new ArrayList<>();
         periods.add(period);
