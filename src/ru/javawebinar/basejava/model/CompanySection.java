@@ -8,10 +8,12 @@ public class CompanySection extends Section {
     private List<Company> companies;
 
     public CompanySection(List<Company> companies) {
+        Objects.requireNonNull(companies, "companies must not be null");
         this.companies = companies;
     }
 
     public void setCompanies(List<Company> companies) {
+        Objects.requireNonNull(companies, "companies must not be null");
         this.companies = companies;
     }
 
@@ -26,12 +28,12 @@ public class CompanySection extends Section {
 
         CompanySection that = (CompanySection) o;
 
-        return Objects.equals(companies, that.companies);
+        return companies.equals(that.companies);
     }
 
     @Override
     public int hashCode() {
-        return companies != null ? companies.hashCode() : 0;
+        return companies.hashCode();
     }
 
     @Override
