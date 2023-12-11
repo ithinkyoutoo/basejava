@@ -10,7 +10,16 @@ public class Company {
     private String website;
     private List<Period> periods;
 
+    public Company(String name, String website, List<Period> periods) {
+        Objects.requireNonNull(name, "name must not be null");
+        Objects.requireNonNull(periods, "periods must not be null");
+        this.name = name;
+        this.website = website;
+        this.periods = periods;
+    }
+
     public void setName(String name) {
+        Objects.requireNonNull(name, "name must not be null");
         this.name = name;
     }
 
@@ -27,6 +36,7 @@ public class Company {
     }
 
     public void setPeriods(List<Period> periods) {
+        Objects.requireNonNull(periods, "periods must not be null");
         this.periods = periods;
     }
 
@@ -41,16 +51,16 @@ public class Company {
 
         Company company = (Company) o;
 
-        if (!Objects.equals(name, company.name)) return false;
+        if (!name.equals(company.name)) return false;
         if (!Objects.equals(website, company.website)) return false;
-        return Objects.equals(periods, company.periods);
+        return periods.equals(company.periods);
     }
 
     @Override
     public int hashCode() {
-        int result = name != null ? name.hashCode() : 0;
+        int result = name.hashCode();
         result = 31 * result + (website != null ? website.hashCode() : 0);
-        result = 31 * result + (periods != null ? periods.hashCode() : 0);
+        result = 31 * result + periods.hashCode();
         return result;
     }
 
@@ -70,7 +80,18 @@ public class Company {
         private String title;
         private String description;
 
+        public Period(LocalDate beginDate, LocalDate endDate, String title, String description) {
+            Objects.requireNonNull(beginDate, "beginDate must not be null");
+            Objects.requireNonNull(endDate, "endDate must not be null");
+            Objects.requireNonNull(title, "title must not be null");
+            this.beginDate = beginDate;
+            this.endDate = endDate;
+            this.title = title;
+            this.description = description;
+        }
+
         public void setBeginDate(LocalDate beginDate) {
+            Objects.requireNonNull(beginDate, "beginDate must not be null");
             this.beginDate = beginDate;
         }
 
@@ -79,6 +100,7 @@ public class Company {
         }
 
         public void setEndDate(LocalDate endDate) {
+            Objects.requireNonNull(endDate, "endDate must not be null");
             this.endDate = endDate;
         }
 
@@ -87,6 +109,7 @@ public class Company {
         }
 
         public void setTitle(String title) {
+            Objects.requireNonNull(title, "title must not be null");
             this.title = title;
         }
 
@@ -109,17 +132,17 @@ public class Company {
 
             Period period = (Period) o;
 
-            if (!Objects.equals(beginDate, period.beginDate)) return false;
-            if (!Objects.equals(endDate, period.endDate)) return false;
-            if (!Objects.equals(title, period.title)) return false;
+            if (!beginDate.equals(period.beginDate)) return false;
+            if (!endDate.equals(period.endDate)) return false;
+            if (!title.equals(period.title)) return false;
             return Objects.equals(description, period.description);
         }
 
         @Override
         public int hashCode() {
-            int result = beginDate != null ? beginDate.hashCode() : 0;
-            result = 31 * result + (endDate != null ? endDate.hashCode() : 0);
-            result = 31 * result + (title != null ? title.hashCode() : 0);
+            int result = beginDate.hashCode();
+            result = 31 * result + endDate.hashCode();
+            result = 31 * result + title.hashCode();
             result = 31 * result + (description != null ? description.hashCode() : 0);
             return result;
         }
