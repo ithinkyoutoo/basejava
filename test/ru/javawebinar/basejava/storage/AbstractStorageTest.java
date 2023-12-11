@@ -10,6 +10,7 @@ import ru.javawebinar.basejava.model.Resume;
 import java.util.List;
 
 import static org.junit.Assert.*;
+import static ru.javawebinar.basejava.model.ResumeTestData.newResume;
 
 public abstract class AbstractStorageTest {
 
@@ -22,10 +23,10 @@ public abstract class AbstractStorageTest {
     private static final String FULL_NAME_2 = "name2";
     private static final String FULL_NAME_3 = "name3";
     private static final String FULL_NAME_4 = "name4";
-    private static final Resume RESUME_1 = new Resume(UUID_1, FULL_NAME_1);
-    private static final Resume RESUME_2 = new Resume(UUID_2, FULL_NAME_2);
-    private static final Resume RESUME_3 = new Resume(UUID_3, FULL_NAME_3);
-    private static final Resume RESUME_4 = new Resume(UUID_4, FULL_NAME_4);
+    private static final Resume RESUME_1 = newResume(UUID_1, FULL_NAME_1);
+    private static final Resume RESUME_2 = newResume(UUID_2, FULL_NAME_2);
+    private static final Resume RESUME_3 = newResume(UUID_3, FULL_NAME_3);
+    private static final Resume RESUME_4 = newResume(UUID_4, FULL_NAME_4);
 
     protected final Storage storage;
 
@@ -57,7 +58,7 @@ public abstract class AbstractStorageTest {
 
     @Test
     public void update() {
-        storage.update(new Resume(UUID_1, FULL_NAME_4));
+        storage.update(newResume(UUID_1, FULL_NAME_4));
         RESUME_1.setFullName(FULL_NAME_4);
         assertEquals(RESUME_1, storage.get(UUID_1));
     }
@@ -79,7 +80,7 @@ public abstract class AbstractStorageTest {
 
     @Test(expected = ExistStorageException.class)
     public void saveExist() {
-        storage.save(new Resume(UUID_1, FULL_NAME_1));
+        storage.save(newResume(UUID_1, FULL_NAME_1));
     }
 
     @Test

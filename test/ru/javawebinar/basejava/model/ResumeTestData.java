@@ -1,39 +1,45 @@
 package ru.javawebinar.basejava.model;
 
+import ru.javawebinar.basejava.util.DateUtil;
+
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import static java.time.Month.*;
 import static ru.javawebinar.basejava.model.ContactType.*;
 import static ru.javawebinar.basejava.model.SectionType.*;
 
 public class ResumeTestData {
 
     public static void main(String[] args) {
-        Resume r = new Resume("Григорий Кислин");
+        printResume(newResume("uuid", "Григорий Кислин"));
+    }
 
+    public static Resume newResume(String uuid, String fullName) {
+        Resume r = new Resume(uuid, fullName);
         setContacts(r);
         setTextSections(r);
         setListSections(r);
         setCompanySections(r);
-        printResume(r);
+        return r;
     }
 
     private static void setContacts(Resume r) {
-        r.getContacts().put(TEL, "+7(921) 855-0482");
-        r.getContacts().put(SKYPE, "grigory.kislin");
-        r.getContacts().put(EMAIL, "gkislin@yandex.ru");
-        r.getContacts().put(LINKEDIN, "www.linkedin.com/in/gkislin");
-        r.getContacts().put(GITHUB, "www.github.com/gkislin");
-        r.getContacts().put(STACKOVERFLOW, "www.stackoverflow.com/users/548473/grigory-kislin");
-        r.getContacts().put(HOMEPAGE, "www.gkislin.ru");
+        r.setContact(TEL, "+7(921) 855-0482");
+        r.setContact(SKYPE, "grigory.kislin");
+        r.setContact(EMAIL, "gkislin@yandex.ru");
+        r.setContact(LINKEDIN, "www.linkedin.com/in/gkislin");
+        r.setContact(GITHUB, "www.github.com/gkislin");
+        r.setContact(STACKOVERFLOW, "www.stackoverflow.com/users/548473/grigory-kislin");
+        r.setContact(HOME_PAGE, "www.gkislin.ru");
     }
 
     private static void setTextSections(Resume r) {
-        r.getSections().put(OBJECTIVE, new TextSection(
+        r.setSection(OBJECTIVE, new TextSection(
                 "Ведущий стажировок и корпоративного обучения по Java Web и Enterprise технологиям"));
-        r.getSections().put(PERSONAL, new TextSection(
+        r.setSection(PERSONAL, new TextSection(
                 "Аналитический склад ума, сильная логика, креативность, инициативность. Пурист кода и архитектуры."));
     }
 
@@ -49,93 +55,87 @@ public class ResumeTestData {
                 Реализация двухфакторной аутентификации для онлайн платформы управления проектами Wrike. \s
                 Интеграция с Twilio, DuoSecurity, Google Authenticator, Jira, Zendesk.
                 """;
-        r.getSections().put(ACHIEVEMENT, new ListSection(List.of(split(text))));
+        r.setSection(ACHIEVEMENT, new ListSection(asList(text)));
         text = """
                 JEE AS: GlassFish (v2.1, v3), OC4J, JBoss, Tomcat, Jetty, WebLogic, WSO2
                 Version control: Subversion, Git, Mercury, ClearCase, Perforce
                 DB: PostgreSQL(наследование, pgplsql, PL/Python), Redis (Jedis), H2, Oracle, MySQL, SQLite, MS SQL,\s
                 HSQLDB
                 """;
-        r.getSections().put(QUALIFICATIONS, new ListSection(List.of(split(text))));
+        r.setSection(QUALIFICATIONS, new ListSection(asList(text)));
     }
 
-    private static String[] split(String text) {
-        return text.split("\\n");
+    private static List<String> asList(String text) {
+        return List.of(text.split("\\n"));
     }
 
     private static void setCompanySections(Resume r) {
-        r.getSections().put(EXPERIENCE, new CompanySection(getCompanySection(getCompany1(), getCompany2())));
-        r.getSections().put(EDUCATION, new CompanySection(getCompanySection(getCompany3(), getCompany4())));
-    }
-
-    private static List<Company> getCompanySection(Company company1, Company company2) {
-        List<Company> companies = new ArrayList<>();
-        companies.add(company1);
-        companies.add(company2);
-        return companies;
+        r.setSection(EXPERIENCE, new CompanySection(new ArrayList<>(List.of(getCompany1(), getCompany2()))));
+        r.setSection(EDUCATION, new CompanySection(
+                new ArrayList<>(List.of(getCompany3(), getCompany4(), getCompany5()))));
     }
 
     private static Company getCompany1() {
-        Company company = new Company();
-        company.setName("Java Online Projects");
-        company.setWebsite("www.javaops.ru");
-        Company.Period period = new Company.Period();
-        period.setBeginDate(LocalDate.of(2013, 10, 1));
-        period.setEndDate(null);
-        period.setTitle("Автор проекта");
-        period.setDescription("Создание, организация и проведение Java онлайн проектов и стажировок.");
-        List<Company.Period> periods = new ArrayList<>();
-        periods.add(period);
-        company.setPeriods(periods);
-        return company;
+        String name = "Java Online Projects";
+        String website = "www.javaops.ru";
+        LocalDate begin = DateUtil.of(2013, OCTOBER);
+        LocalDate end = DateUtil.of("");
+        String title = "Автор проекта";
+        String description = "Создание, организация и проведение Java онлайн проектов и стажировок.";
+        Company.Period period = new Company.Period(begin, end, title, description);
+        return new Company(name, website, new ArrayList<>(List.of(period)));
     }
 
     private static Company getCompany2() {
-        Company company = new Company();
-        company.setName("Wrike");
-        company.setWebsite("www.wrike.co");
-        Company.Period period = new Company.Period();
-        period.setBeginDate(LocalDate.of(2014, 10, 1));
-        period.setEndDate(LocalDate.of(2016, 1, 1));
-        period.setTitle("Старший разработчик (backend)");
+        String name = "Wrike";
+        String website = "www.wrike.co";
+        LocalDate begin = DateUtil.of(2014, OCTOBER);
+        LocalDate end = DateUtil.of(2016, JANUARY);
+        String title = "Старший разработчик (backend)";
         String description = """
                 Проектирование и разработка онлайн платформы управления проектами Wrike (Java 8 API, Maven, Spring,\s
                 MyBatis, Guava, Vaadin, PostgreSQL, Redis). Двухфакторная аутентификация, авторизация по OAuth1,\s
                 OAuth2, JWT SSO.
                 """;
-        period.setDescription(description);
-        List<Company.Period> periods = new ArrayList<>();
-        periods.add(period);
-        company.setPeriods(periods);
-        return company;
+        Company.Period period = new Company.Period(begin, end, title, description);
+        return new Company(name, website, new ArrayList<>(List.of(period)));
     }
 
     private static Company getCompany3() {
-        Company company = new Company();
-        company.setName("Coursera");
-        company.setWebsite("www.coursera.org/learn/progfun1");
-        Company.Period period = new Company.Period();
-        period.setBeginDate(LocalDate.of(2013, 3, 1));
-        period.setEndDate(LocalDate.of(2013, 5, 1));
-        period.setTitle("'Functional Programming Principles in Scala' by Martin Odersky");
-        List<Company.Period> periods = new ArrayList<>();
-        periods.add(period);
-        company.setPeriods(periods);
-        return company;
+        String name = "Coursera";
+        String website = "www.coursera.org/learn/progfun1";
+        LocalDate begin = DateUtil.of(2013, MARCH);
+        LocalDate end = DateUtil.of(2013, MAY);
+        String title = "'Functional Programming Principles in Scala' by Martin Odersky";
+        Company.Period period = new Company.Period(begin, end, title, null);
+        return new Company(name, website, new ArrayList<>(List.of(period)));
     }
 
     private static Company getCompany4() {
-        Company company = new Company();
-        company.setName("Luxoft");
-        company.setWebsite("www.luxoft-training.ru/training/catalog/course.html?ID=22366");
-        Company.Period period = new Company.Period();
-        period.setBeginDate(LocalDate.of(2011, 3, 1));
-        period.setEndDate(LocalDate.of(2011, 4, 1));
-        period.setTitle("Курс 'Объектно-ориентированный анализ ИС. Концептуальное моделирование на UML.'");
-        List<Company.Period> periods = new ArrayList<>();
-        periods.add(period);
-        company.setPeriods(periods);
-        return company;
+        String name = "Luxoft";
+        String website = "www.luxoft-training.ru/training/catalog/course.html?ID=22366";
+        LocalDate begin = DateUtil.of(2011, MARCH);
+        LocalDate end = DateUtil.of(2011, APRIL);
+        String title = "Курс 'Объектно-ориентированный анализ ИС. Концептуальное моделирование на UML.'";
+        Company.Period period = new Company.Period(begin, end, title, null);
+        return new Company(name, website, new ArrayList<>(List.of(period)));
+    }
+
+    private static Company getCompany5() {
+        String name = """
+                Санкт-Петербургский национальный исследовательский университет информационных технологий,\s
+                механики и оптики
+                """;
+        String website = "www.itmo.ru";
+        LocalDate begin = DateUtil.of(1993, SEPTEMBER);
+        LocalDate end = DateUtil.of(1996, JULY);
+        String title = "Аспирантура (программист С, С++)";
+        Company.Period period1 = new Company.Period(begin, end, title, null);
+        begin = DateUtil.of(1987, SEPTEMBER);
+        end = DateUtil.of(1993, JULY);
+        title = "Инженер (программист Fortran, C)";
+        Company.Period period2 = new Company.Period(begin, end, title, null);
+        return new Company(name, website, new ArrayList<>(List.of(period1, period2)));
     }
 
     private static void printResume(Resume r) {
@@ -166,7 +166,7 @@ public class ResumeTestData {
     private static void printListSection(Map.Entry<SectionType, Section> entry, SectionType type) {
         System.out.println("\n" + type);
         ListSection list = (ListSection) entry.getValue();
-        for (String s : list.getList()) {
+        for (String s : list.getItems()) {
             System.out.println(s);
         }
     }
@@ -177,7 +177,8 @@ public class ResumeTestData {
         for (Company c : list.getCompanies()) {
             System.out.println("\n" + c.getName() + " " + c.getWebsite());
             for (Company.Period p : c.getPeriods()) {
-                System.out.println(p.getBeginDate() + " - " + (p.getEndDate() != null ? p.getEndDate() : "Сейчас"));
+                System.out.println(p.getBeginDate() + " - " +
+                        ((p.getEndDate().toString().equals("1111-01-01")) ? "Сейчас" : p.getEndDate()));
                 System.out.println(p.getTitle());
                 if (p.getDescription() != null) {
                     System.out.println(p.getDescription());
