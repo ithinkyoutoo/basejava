@@ -1,16 +1,13 @@
 package ru.javawebinar.basejava.model;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
-import java.util.UUID;
+import java.util.*;
 
 public class Resume {
 
     private final String uuid;
     private String fullName;
-    private Map<ContactType, String> contacts;
-    private Map<SectionType, Section> sections;
+    private Map<ContactType, String> contacts = new EnumMap<>(ContactType.class);
+    private Map<SectionType, Section> sections = new EnumMap<>(SectionType.class);
 
 //    public Resume() {
 //        this.uuid = UUID.randomUUID().toString();
@@ -18,8 +15,6 @@ public class Resume {
 
     public Resume(String fullName) {
         this(UUID.randomUUID().toString(), fullName);
-        contacts = new HashMap<>();
-        sections = new HashMap<>();
     }
 
     public Resume(String uuid, String fullName) {
@@ -43,6 +38,7 @@ public class Resume {
     }
 
     public void setContacts(Map<ContactType, String> contacts) {
+        Objects.requireNonNull(contacts, "contacts must not be null");
         this.contacts = contacts;
     }
 
@@ -50,12 +46,29 @@ public class Resume {
         return contacts;
     }
 
+    public void setContact(ContactType type, String text) {
+        contacts.put(type, text);
+    }
+
+    public String getContact(ContactType type) {
+        return contacts.get(type);
+    }
+
     public void setSections(Map<SectionType, Section> sections) {
+        Objects.requireNonNull(sections, "sections must not be null");
         this.sections = sections;
     }
 
     public Map<SectionType, Section> getSections() {
         return sections;
+    }
+
+    public void setSection(SectionType type, Section section) {
+        sections.put(type, section);
+    }
+
+    public Section getSection(SectionType type) {
+        return sections.get(type);
     }
 
     @Override
@@ -67,16 +80,16 @@ public class Resume {
 
         if (!uuid.equals(resume.uuid)) return false;
         if (!fullName.equals(resume.fullName)) return false;
-        if (!Objects.equals(contacts, resume.contacts)) return false;
-        return Objects.equals(sections, resume.sections);
+        if (!contacts.equals(resume.contacts)) return false;
+        return sections.equals(resume.sections);
     }
 
     @Override
     public int hashCode() {
         int result = uuid.hashCode();
         result = 31 * result + fullName.hashCode();
-        result = 31 * result + (contacts != null ? contacts.hashCode() : 0);
-        result = 31 * result + (sections != null ? sections.hashCode() : 0);
+        result = 31 * result + contacts.hashCode();
+        result = 31 * result + sections.hashCode();
         return result;
     }
 
