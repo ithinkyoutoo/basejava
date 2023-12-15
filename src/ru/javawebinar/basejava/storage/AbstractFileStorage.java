@@ -94,10 +94,6 @@ public abstract class AbstractFileStorage extends AbstractStorage<File> {
         return file.exists();
     }
 
-    protected abstract void doWrite(Resume r, File file) throws IOException;
-
-    protected abstract Resume doRead(File file) throws IOException;
-
     private File[] getFiles(File directory) {
         File[] files = directory.listFiles();
         if (files != null) {
@@ -105,4 +101,8 @@ public abstract class AbstractFileStorage extends AbstractStorage<File> {
         }
         throw new StorageException(directory, " is null");
     }
+
+    protected abstract void doWrite(Resume r, File file) throws IOException;
+
+    protected abstract Resume doRead(File file) throws IOException;
 }
