@@ -1,11 +1,16 @@
 package ru.javawebinar.basejava.model;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
 public class ListSection extends Section {
 
     private List<String> items;
+
+    public ListSection(String description) {
+        this(new ArrayList<>(List.of(description.split("\\n"))));
+    }
 
     public ListSection(List<String> items) {
         Objects.requireNonNull(items, "items must not be null");
