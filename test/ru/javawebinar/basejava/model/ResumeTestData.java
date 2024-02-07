@@ -3,8 +3,6 @@ package ru.javawebinar.basejava.model;
 import ru.javawebinar.basejava.util.DateUtil;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 
 import static java.time.Month.*;
@@ -55,35 +53,29 @@ public class ResumeTestData {
                 Реализация двухфакторной аутентификации для онлайн платформы управления проектами Wrike. \s
                 Интеграция с Twilio, DuoSecurity, Google Authenticator, Jira, Zendesk.
                 """;
-        r.setSection(ACHIEVEMENT, new ListSection(asList(text)));
+        r.setSection(ACHIEVEMENT, new ListSection(text));
         text = """
                 JEE AS: GlassFish (v2.1, v3), OC4J, JBoss, Tomcat, Jetty, WebLogic, WSO2
                 Version control: Subversion, Git, Mercury, ClearCase, Perforce
                 DB: PostgreSQL(наследование, pgplsql, PL/Python), Redis (Jedis), H2, Oracle, MySQL, SQLite, MS SQL,\s
                 HSQLDB
                 """;
-        r.setSection(QUALIFICATIONS, new ListSection(asList(text)));
-    }
-
-    private static List<String> asList(String text) {
-        return List.of(text.split("\\n"));
+        r.setSection(QUALIFICATIONS, new ListSection(text));
     }
 
     private static void setCompanySections(Resume r) {
-        r.setSection(EXPERIENCE, new CompanySection(new ArrayList<>(List.of(getCompany1(), getCompany2()))));
-        r.setSection(EDUCATION, new CompanySection(
-                new ArrayList<>(List.of(getCompany3(), getCompany4(), getCompany5()))));
+        r.setSection(EXPERIENCE, new CompanySection(getCompany1(), getCompany2()));
+        r.setSection(EDUCATION, new CompanySection(getCompany3(), getCompany4(), getCompany5()));
     }
 
     private static Company getCompany1() {
         String name = "Java Online Projects";
         String website = "www.javaops.ru";
         LocalDate begin = DateUtil.of(2013, OCTOBER);
-        LocalDate end = DateUtil.of("");
         String title = "Автор проекта";
         String description = "Создание, организация и проведение Java онлайн проектов и стажировок.";
-        Company.Period period = new Company.Period(begin, end, title, description);
-        return new Company(name, website, new ArrayList<>(List.of(period)));
+        Company.Period period = new Company.Period(begin, title, description);
+        return new Company(name, website, period);
     }
 
     private static Company getCompany2() {
@@ -98,7 +90,7 @@ public class ResumeTestData {
                 OAuth2, JWT SSO.
                 """;
         Company.Period period = new Company.Period(begin, end, title, description);
-        return new Company(name, website, new ArrayList<>(List.of(period)));
+        return new Company(name, website, period);
     }
 
     private static Company getCompany3() {
@@ -108,7 +100,7 @@ public class ResumeTestData {
         LocalDate end = DateUtil.of(2013, MAY);
         String title = "'Functional Programming Principles in Scala' by Martin Odersky";
         Company.Period period = new Company.Period(begin, end, title, null);
-        return new Company(name, website, new ArrayList<>(List.of(period)));
+        return new Company(name, website, period);
     }
 
     private static Company getCompany4() {
@@ -118,7 +110,7 @@ public class ResumeTestData {
         LocalDate end = DateUtil.of(2011, APRIL);
         String title = "Курс 'Объектно-ориентированный анализ ИС. Концептуальное моделирование на UML.'";
         Company.Period period = new Company.Period(begin, end, title, null);
-        return new Company(name, website, new ArrayList<>(List.of(period)));
+        return new Company(name, website, period);
     }
 
     private static Company getCompany5() {
@@ -135,7 +127,7 @@ public class ResumeTestData {
         end = DateUtil.of(1993, JULY);
         title = "Инженер (программист Fortran, C)";
         Company.Period period2 = new Company.Period(begin, end, title, null);
-        return new Company(name, website, new ArrayList<>(List.of(period1, period2)));
+        return new Company(name, website, period1, period2);
     }
 
     private static void printResume(Resume r) {
@@ -178,7 +170,7 @@ public class ResumeTestData {
             System.out.println("\n" + c.getName() + " " + c.getWebsite());
             for (Company.Period p : c.getPeriods()) {
                 System.out.println(p.getBeginDate() + " - " +
-                        ((p.getEndDate().toString().equals("1111-01-01")) ? "Сейчас" : p.getEndDate()));
+                        ((p.getEndDate().equals(DateUtil.NOW)) ? "Сейчас" : p.getEndDate()));
                 System.out.println(p.getTitle());
                 if (p.getDescription() != null) {
                     System.out.println(p.getDescription());
