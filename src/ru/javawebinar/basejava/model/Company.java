@@ -1,6 +1,9 @@
 package ru.javawebinar.basejava.model;
 
+import ru.javawebinar.basejava.util.DateUtil;
+
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -9,6 +12,10 @@ public class Company {
     private String name;
     private String website;
     private List<Period> periods;
+
+    public Company(String name, String website, Period... periods) {
+        this(name, website, new ArrayList<>(List.of(periods)));
+    }
 
     public Company(String name, String website, List<Period> periods) {
         Objects.requireNonNull(name, "name must not be null");
@@ -79,6 +86,10 @@ public class Company {
         private LocalDate endDate;
         private String title;
         private String description;
+
+        public Period(LocalDate beginDate, String title, String description) {
+            this(beginDate, DateUtil.NOW, title, description);
+        }
 
         public Period(LocalDate beginDate, LocalDate endDate, String title, String description) {
             Objects.requireNonNull(beginDate, "beginDate must not be null");
