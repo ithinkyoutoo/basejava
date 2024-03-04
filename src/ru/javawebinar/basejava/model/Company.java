@@ -2,12 +2,17 @@ package ru.javawebinar.basejava.model;
 
 import ru.javawebinar.basejava.util.DateUtil;
 
+import java.io.Serial;
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-public class Company {
+public class Company implements Serializable {
+
+    @Serial
+    private static final long serialVersionUID = 1L;
 
     private String name;
     private String website;
@@ -80,7 +85,7 @@ public class Company {
                 '}';
     }
 
-    public static class Period {
+    public static class Period implements Serializable {
 
         private LocalDate beginDate;
         private LocalDate endDate;
