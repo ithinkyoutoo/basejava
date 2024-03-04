@@ -7,13 +7,15 @@ import ru.javawebinar.basejava.exception.ExistStorageException;
 import ru.javawebinar.basejava.exception.NotExistStorageException;
 import ru.javawebinar.basejava.model.Resume;
 
+import java.io.File;
 import java.util.List;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 import static ru.javawebinar.basejava.model.ResumeTestData.newResume;
 
 public abstract class AbstractStorageTest {
 
+    protected static final File STORAGE_DIR = new File("D:\\java\\basejava\\storage");
     private static final String DUMMY = "dummy";
     private static final String UUID_1 = "uuid1";
     private static final String UUID_2 = "uuid2";
@@ -114,11 +116,11 @@ public abstract class AbstractStorageTest {
     public void getAllSorted() {
         List<Resume> expected = List.of(RESUME_1, RESUME_2, RESUME_3);
         assertList(expected);
-        RESUME_2.setFullName(FULL_NAME_1);
-        RESUME_3.setFullName(FULL_NAME_1);
+        updateFullName(RESUME_2, FULL_NAME_1);
+        updateFullName(RESUME_3, FULL_NAME_1);
         assertList(expected);
         expected = List.of(RESUME_2, RESUME_3, RESUME_1);
-        RESUME_1.setFullName(FULL_NAME_3);
+        updateFullName(RESUME_1, FULL_NAME_3);
         assertList(expected);
     }
 
@@ -145,5 +147,10 @@ public abstract class AbstractStorageTest {
 
     private void assertList(List<Resume> expected) {
         assertEquals(expected, storage.getAllSorted());
+    }
+
+    private void updateFullName(Resume resume, String name) {
+        resume.setFullName(name);
+        storage.update(resume);
     }
 }
