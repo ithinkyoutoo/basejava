@@ -12,15 +12,15 @@ public abstract class AbstractFileStorage extends AbstractStorage<File> {
 
     private final File directory;
 
-    protected AbstractFileStorage(File directory) {
-        Objects.requireNonNull(directory, "directory must not be null");
+    protected AbstractFileStorage(String dir) {
+        Objects.requireNonNull(dir, "directory must not be null");
+        this.directory = new File(dir);
         if (!directory.isDirectory()) {
-            throw new IllegalArgumentException(directory.getAbsolutePath() + " is not directory");
+            throw new IllegalArgumentException(dir + " is not directory");
         }
         if (!directory.canRead() || !directory.canWrite()) {
-            throw new IllegalArgumentException(directory.getAbsolutePath() + " is not readable/writable");
+            throw new IllegalArgumentException(dir + " is not readable/writable");
         }
-        this.directory = directory;
     }
 
     @Override
@@ -66,7 +66,7 @@ public abstract class AbstractFileStorage extends AbstractStorage<File> {
     @Override
     protected void doDelete(File file) {
         if (!file.delete()) {
-            throw new StorageException(file, " file delete error");
+            throw new StorageException("File delete error", file.getName());
         }
     }
 
@@ -95,7 +95,7 @@ public abstract class AbstractFileStorage extends AbstractStorage<File> {
         if (files != null) {
             return files;
         }
-        throw new StorageException(directory, " directory read error");
+        throw new StorageException(directory + " directory read error");
     }
 
     protected abstract void doWrite(Resume resume, OutputStream os) throws IOException;
