@@ -5,19 +5,31 @@ import java.util.Objects;
 
 public class MainPrintProjectFiles {
 
-    public static void main(String[] args) {
-        File dir = new File("D:\\java\\basejava");
+    private static final int INDENT = 2;
 
-        print(dir);
+    public static void main(String[] args) {
+        File dir = new File("D:\\java\\basejava\\src");
+
+        printTree(dir);
     }
 
-    private static void print(File dir) {
+    private static void printTree(File dir) {
+        int rootNameCount = getNameCount(dir);
+        printTree(dir, rootNameCount);
+    }
+
+    private static void printTree(File dir, int rootNameCount) {
+        String str = " ";
+        int count = getNameCount(dir) - rootNameCount;
         for (File file : Objects.requireNonNull(dir.listFiles())) {
+            System.out.println(str.repeat(count * INDENT) + file.getName());
             if (file.isDirectory()) {
-                print(file);
-            } else {
-                System.out.println(file.getAbsolutePath());
+                printTree(file, rootNameCount);
             }
         }
+    }
+
+    private static int getNameCount(File dir) {
+        return dir.toPath().getNameCount();
     }
 }
