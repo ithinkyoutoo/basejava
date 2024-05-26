@@ -12,8 +12,6 @@ import ru.javawebinar.basejava.storage.serialization.PathStorageObjectStreamStra
         MapResumeStorageTest.class,
         ArrayStorageTest.class,
         SortedArrayStorageTest.class,
-        ObjectStreamFileStorageTest.class,
-        ObjectStreamPathStorageTest.class,
         FileStorageObjectStreamStrategyTest.class,
         PathStorageObjectStreamStrategyTest.class
 })
