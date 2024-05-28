@@ -59,7 +59,7 @@ public class PathStorage extends AbstractStorage<Path> {
         try {
             Files.createFile(path);
         } catch (IOException e) {
-            throw new StorageException("Couldn't create file " + path.toAbsolutePath(), getName(path), e);
+            throw new StorageException("Couldn't create file " + path, getName(path), e);
         }
         doUpdate(resume, path);
     }
@@ -95,14 +95,14 @@ public class PathStorage extends AbstractStorage<Path> {
 
     @Override
     protected boolean isExist(Path path) {
-        return Files.exists(path);
+        return Files.isRegularFile(path);
     }
 
     private Stream<Path> getStream(Path directory) {
         try {
             return Files.list(directory);
         } catch (IOException e) {
-            throw new StorageException(directory + " directory read error");
+            throw new StorageException(directory + " directory read error", e);
         }
     }
 
