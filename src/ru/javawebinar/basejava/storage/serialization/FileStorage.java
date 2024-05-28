@@ -57,7 +57,7 @@ public class FileStorage extends AbstractStorage<File> {
         try {
             file.createNewFile();
         } catch (IOException e) {
-            throw new StorageException("Couldn't create file " + file.getAbsolutePath(), file.getName(), e);
+            throw new StorageException("Couldn't create file " + file, file.getName(), e);
         }
         doUpdate(resume, file);
     }
