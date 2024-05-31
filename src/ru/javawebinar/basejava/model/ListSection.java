@@ -10,7 +10,10 @@ public class ListSection extends Section {
     @Serial
     private static final long serialVersionUID = 1L;
 
-    private List<String> items;
+    private List<String> items = new ArrayList<>();
+
+    public ListSection() {
+    }
 
     public ListSection(String description) {
         this(new ArrayList<>(List.of(description.split("\\n"))));

@@ -10,6 +10,9 @@ public class TextSection extends Section {
 
     private String text;
 
+    public TextSection() {
+    }
+
     public TextSection(String text) {
         Objects.requireNonNull(text, "text must not be null");
         this.text = text;

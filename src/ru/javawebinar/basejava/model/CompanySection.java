@@ -10,7 +10,10 @@ public class CompanySection extends Section {
     @Serial
     private static final long serialVersionUID = 1L;
 
-    private List<Company> companies;
+    private List<Company> companies = new ArrayList<>();
+
+    public CompanySection() {
+    }
 
     public CompanySection(Company... companies) {
         this(new ArrayList<>(List.of(companies)));

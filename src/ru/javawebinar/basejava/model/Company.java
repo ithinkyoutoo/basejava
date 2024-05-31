@@ -1,6 +1,10 @@
 package ru.javawebinar.basejava.model;
 
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import ru.javawebinar.basejava.util.DateUtil;
+import ru.javawebinar.basejava.util.LocalDateAdapter;
 
 import java.io.Serial;
 import java.io.Serializable;
@@ -9,6 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+@XmlAccessorType(XmlAccessType.FIELD)
 public class Company implements Serializable {
 
     @Serial
@@ -16,7 +21,10 @@ public class Company implements Serializable {
 
     private String name;
     private String website;
-    private List<Period> periods;
+    private List<Period> periods = new ArrayList<>();
+
+    public Company() {
+    }
 
     public Company(String name, String website, Period... periods) {
         this(name, website, new ArrayList<>(List.of(periods)));
@@ -85,12 +93,18 @@ public class Company implements Serializable {
                 '}';
     }
 
+    @XmlAccessorType(XmlAccessType.FIELD)
     public static class Period implements Serializable {
 
+        @XmlJavaTypeAdapter(LocalDateAdapter.class)
         private LocalDate beginDate;
+        @XmlJavaTypeAdapter(LocalDateAdapter.class)
         private LocalDate endDate;
         private String title;
         private String description;
+
+        public Period() {
+        }
 
         public Period(LocalDate beginDate, String title, String description) {
             this(beginDate, DateUtil.NOW, title, description);
