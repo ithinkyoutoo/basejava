@@ -1,6 +1,6 @@
-package ru.javawebinar.basejava.storage.serialization;
+package ru.javawebinar.basejava.storage;
 
-import ru.javawebinar.basejava.storage.AbstractStorageTest;
+import ru.javawebinar.basejava.storage.serialization.ObjectStreamStrategy;
 
 public class PathStorageObjectStreamStrategyTest extends AbstractStorageTest {
 
