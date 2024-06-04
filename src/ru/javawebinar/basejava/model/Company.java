@@ -23,7 +23,7 @@ public class Company implements Serializable {
     private String website;
     private List<Period> periods = new ArrayList<>();
 
-    public Company() {
+    private Company() {
     }
 
     public Company(String name, String website, Period... periods) {
@@ -105,7 +105,7 @@ public class Company implements Serializable {
         private String title;
         private List<String> description = new ArrayList<>();
 
-        public Period() {
+        private Period() {
         }
 
         public Period(LocalDate beginDate, String title) {

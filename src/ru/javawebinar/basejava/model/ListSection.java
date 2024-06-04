@@ -12,7 +12,7 @@ public class ListSection extends Section {
 
     private List<String> items = new ArrayList<>();
 
-    public ListSection() {
+    private ListSection() {
     }
 
     public ListSection(String description) {

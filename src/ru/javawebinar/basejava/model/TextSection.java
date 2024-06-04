@@ -10,7 +10,7 @@ public class TextSection extends Section {
 
     private String text;
 
-    public TextSection() {
+    private TextSection() {
     }
 
     public TextSection(String text) {

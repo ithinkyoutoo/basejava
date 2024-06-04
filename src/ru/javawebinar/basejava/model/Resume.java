@@ -23,7 +23,7 @@ public class Resume implements Serializable {
     private Map<ContactType, String> contacts = new EnumMap<>(ContactType.class);
     private Map<SectionType, Section> sections = new EnumMap<>(SectionType.class);
 
-    public Resume() {
+    private Resume() {
     }
 
     public Resume(String fullName) {

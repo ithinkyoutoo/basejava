@@ -12,7 +12,7 @@ public class CompanySection extends Section {
 
     private List<Company> companies = new ArrayList<>();
 
-    public CompanySection() {
+    private CompanySection() {
     }
 
     public CompanySection(Company... companies) {
