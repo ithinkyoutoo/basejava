@@ -4,7 +4,7 @@ import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
 import jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import ru.javawebinar.basejava.util.DateUtil;
-import ru.javawebinar.basejava.util.LocalDateAdapter;
+import ru.javawebinar.basejava.util.XmlLocalDateAdapter;
 
 import java.io.Serial;
 import java.io.Serializable;
@@ -98,9 +98,9 @@ public class Company implements Serializable {
     @XmlAccessorType(XmlAccessType.FIELD)
     public static class Period implements Serializable {
 
-        @XmlJavaTypeAdapter(LocalDateAdapter.class)
+        @XmlJavaTypeAdapter(XmlLocalDateAdapter.class)
         private LocalDate beginDate;
-        @XmlJavaTypeAdapter(LocalDateAdapter.class)
+        @XmlJavaTypeAdapter(XmlLocalDateAdapter.class)
         private LocalDate endDate;
         private String title;
         private List<String> description = new ArrayList<>();
