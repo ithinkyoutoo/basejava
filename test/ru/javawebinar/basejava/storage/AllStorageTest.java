@@ -12,7 +12,8 @@ import org.junit.runners.Suite;
         SortedArrayStorageTest.class,
         FileStorageObjectStreamStrategyTest.class,
         PathStorageObjectStreamStrategyTest.class,
-        PathStorageXmlStrategyTest.class
+        PathStorageXmlStrategyTest.class,
+        PathStorageJsonStrategyTest.class
 })
 public class AllStorageTest {
 }
