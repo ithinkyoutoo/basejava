@@ -99,7 +99,7 @@ public class ResumeTestData {
         LocalDate begin = DateUtil.of(2013, MARCH);
         LocalDate end = DateUtil.of(2013, MAY);
         String title = "'Functional Programming Principles in Scala' by Martin Odersky";
-        Company.Period period = new Company.Period(begin, end, title, null);
+        Company.Period period = new Company.Period(begin, end, title);
         return new Company(name, website, period);
     }
 
@@ -109,24 +109,22 @@ public class ResumeTestData {
         LocalDate begin = DateUtil.of(2011, MARCH);
         LocalDate end = DateUtil.of(2011, APRIL);
         String title = "Курс 'Объектно-ориентированный анализ ИС. Концептуальное моделирование на UML.'";
-        Company.Period period = new Company.Period(begin, end, title, null);
+        Company.Period period = new Company.Period(begin, end, title);
         return new Company(name, website, period);
     }
 
     private static Company getCompany5() {
-        String name = """
-                Санкт-Петербургский национальный исследовательский университет информационных технологий,\s
-                механики и оптики
-                """;
+        String name = "Санкт-Петербургский национальный исследовательский университет информационных технологий," +
+                "механики и оптики";
         String website = "www.itmo.ru";
         LocalDate begin = DateUtil.of(1993, SEPTEMBER);
         LocalDate end = DateUtil.of(1996, JULY);
         String title = "Аспирантура (программист С, С++)";
-        Company.Period period1 = new Company.Period(begin, end, title, null);
+        Company.Period period1 = new Company.Period(begin, end, title);
         begin = DateUtil.of(1987, SEPTEMBER);
         end = DateUtil.of(1993, JULY);
         title = "Инженер (программист Fortran, C)";
-        Company.Period period2 = new Company.Period(begin, end, title, null);
+        Company.Period period2 = new Company.Period(begin, end, title);
         return new Company(name, website, period1, period2);
     }
 
@@ -158,9 +156,7 @@ public class ResumeTestData {
     private static void printListSection(Map.Entry<SectionType, Section> entry, SectionType type) {
         System.out.println("\n" + type);
         ListSection list = (ListSection) entry.getValue();
-        for (String s : list.getItems()) {
-            System.out.println(s);
-        }
+        list.getItems().forEach(System.out::println);
     }
 
     private static void printCompanySection(Map.Entry<SectionType, Section> entry, SectionType type) {
@@ -172,8 +168,8 @@ public class ResumeTestData {
                 System.out.println(p.getBeginDate() + " - " +
                         ((p.getEndDate().equals(DateUtil.NOW)) ? "Сейчас" : p.getEndDate()));
                 System.out.println(p.getTitle());
-                if (p.getDescription() != null) {
-                    System.out.println(p.getDescription());
+                if (!p.getDescription().isEmpty()) {
+                    p.getDescription().forEach(System.out::println);
                 }
             }
         }

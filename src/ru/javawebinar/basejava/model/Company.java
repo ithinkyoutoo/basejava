@@ -32,6 +32,7 @@ public class Company implements Serializable {
 
     public Company(String name, String website, List<Period> periods) {
         Objects.requireNonNull(name, "name must not be null");
+        Objects.requireNonNull(website, "website must not be null");
         Objects.requireNonNull(periods, "periods must not be null");
         this.name = name;
         this.website = website;
@@ -48,6 +49,7 @@ public class Company implements Serializable {
     }
 
     public void setWebsite(String website) {
+        Objects.requireNonNull(website, "website must not be null");
         this.website = website;
     }
 
@@ -101,19 +103,32 @@ public class Company implements Serializable {
         @XmlJavaTypeAdapter(LocalDateAdapter.class)
         private LocalDate endDate;
         private String title;
-        private String description;
+        private List<String> description = new ArrayList<>();
 
         public Period() {
+        }
+
+        public Period(LocalDate beginDate, String title) {
+            this(beginDate, DateUtil.NOW, title, new ArrayList<>());
         }
 
         public Period(LocalDate beginDate, String title, String description) {
             this(beginDate, DateUtil.NOW, title, description);
         }
 
+        public Period(LocalDate beginDate, LocalDate endDate, String title) {
+            this(beginDate, endDate, title, new ArrayList<>());
+        }
+
         public Period(LocalDate beginDate, LocalDate endDate, String title, String description) {
+            this(beginDate, endDate, title, new ArrayList<>(List.of(description.split("\\n"))));
+        }
+
+        public Period(LocalDate beginDate, LocalDate endDate, String title, List<String> description) {
             Objects.requireNonNull(beginDate, "beginDate must not be null");
             Objects.requireNonNull(endDate, "endDate must not be null");
             Objects.requireNonNull(title, "title must not be null");
+            Objects.requireNonNull(description, "description must not be null");
             this.beginDate = beginDate;
             this.endDate = endDate;
             this.title = title;
@@ -147,11 +162,12 @@ public class Company implements Serializable {
             return title;
         }
 
-        public void setDescription(String description) {
+        public void setDescription(List<String> description) {
+            Objects.requireNonNull(description, "description must not be null");
             this.description = description;
         }
 
-        public String getDescription() {
+        public List<String> getDescription() {
             return description;
         }
 
