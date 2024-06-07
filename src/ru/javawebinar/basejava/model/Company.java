@@ -26,13 +26,20 @@ public class Company implements Serializable {
     private Company() {
     }
 
+    public Company(String name, Period... periods) {
+        this(name, null, new ArrayList<>(List.of(periods)));
+    }
+
+    public Company(String name, List<Period> periods) {
+        this(name, null, periods);
+    }
+
     public Company(String name, String website, Period... periods) {
         this(name, website, new ArrayList<>(List.of(periods)));
     }
 
     public Company(String name, String website, List<Period> periods) {
         Objects.requireNonNull(name, "name must not be null");
-        Objects.requireNonNull(website, "website must not be null");
         Objects.requireNonNull(periods, "periods must not be null");
         this.name = name;
         this.website = website;
@@ -49,7 +56,6 @@ public class Company implements Serializable {
     }
 
     public void setWebsite(String website) {
-        Objects.requireNonNull(website, "website must not be null");
         this.website = website;
     }
 
@@ -103,7 +109,7 @@ public class Company implements Serializable {
         @XmlJavaTypeAdapter(XmlLocalDateAdapter.class)
         private LocalDate endDate;
         private String title;
-        private List<String> description = new ArrayList<>();
+        private List<String> description;
 
         private Period() {
         }
@@ -128,11 +134,10 @@ public class Company implements Serializable {
             Objects.requireNonNull(beginDate, "beginDate must not be null");
             Objects.requireNonNull(endDate, "endDate must not be null");
             Objects.requireNonNull(title, "title must not be null");
-            Objects.requireNonNull(description, "description must not be null");
             this.beginDate = beginDate;
             this.endDate = endDate;
             this.title = title;
-            this.description = description;
+            this.description = description.isEmpty() ? null : description;
         }
 
         public void setBeginDate(LocalDate beginDate) {
@@ -163,7 +168,6 @@ public class Company implements Serializable {
         }
 
         public void setDescription(List<String> description) {
-            Objects.requireNonNull(description, "description must not be null");
             this.description = description;
         }
 

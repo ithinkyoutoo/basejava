@@ -3,6 +3,7 @@ package ru.javawebinar.basejava.model;
 import ru.javawebinar.basejava.util.DateUtil;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Map;
 
 import static java.time.Month.*;
@@ -105,12 +106,12 @@ public class ResumeTestData {
 
     private static Company getCompany4() {
         String name = "Luxoft";
-        String website = "www.luxoft-training.ru/training/catalog/course.html?ID=22366";
+//        String website = "www.luxoft-training.ru/training/catalog/course.html?ID=22366";
         LocalDate begin = DateUtil.of(2011, MARCH);
         LocalDate end = DateUtil.of(2011, APRIL);
         String title = "Курс 'Объектно-ориентированный анализ ИС. Концептуальное моделирование на UML.'";
         Company.Period period = new Company.Period(begin, end, title);
-        return new Company(name, website, period);
+        return new Company(name, period);
     }
 
     private static Company getCompany5() {
@@ -163,13 +164,15 @@ public class ResumeTestData {
         System.out.println("\n" + type);
         CompanySection list = (CompanySection) entry.getValue();
         for (Company c : list.getCompanies()) {
-            System.out.println("\n" + c.getName() + " " + c.getWebsite());
+            String website = c.getWebsite();
+            System.out.println("\n" + c.getName() + " " + (website != null ? website : ""));
             for (Company.Period p : c.getPeriods()) {
-                System.out.println(p.getBeginDate() + " - " +
-                        ((p.getEndDate().equals(DateUtil.NOW)) ? "Сейчас" : p.getEndDate()));
+                LocalDate endDate = p.getEndDate();
+                System.out.println(p.getBeginDate() + " - " + ((endDate.equals(DateUtil.NOW)) ? "Сейчас" : endDate));
                 System.out.println(p.getTitle());
-                if (!p.getDescription().isEmpty()) {
-                    p.getDescription().forEach(System.out::println);
+                List<String> description = p.getDescription();
+                if (description != null) {
+                    description.forEach(System.out::println);
                 }
             }
         }
