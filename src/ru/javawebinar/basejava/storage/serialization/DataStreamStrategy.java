@@ -2,6 +2,8 @@ package ru.javawebinar.basejava.storage.serialization;
 
 import ru.javawebinar.basejava.exception.StorageException;
 import ru.javawebinar.basejava.model.*;
+import ru.javawebinar.basejava.util.BiCustomConsumer;
+import ru.javawebinar.basejava.util.CustomConsumer;
 
 import java.io.*;
 import java.time.LocalDate;
@@ -15,8 +17,8 @@ public class DataStreamStrategy implements Serialization {
     @Override
     public void doWrite(Resume r, OutputStream os) throws IOException {
         try (DataOutputStream dos = new DataOutputStream(os)) {
-            write(r.getUuid(), dos);
-            write(r.getFullName(), dos);
+            dos.writeUTF(r.getUuid());
+            dos.writeUTF(r.getFullName());
             writeContacts(r.getContacts(), dos);
             writeSections(r.getSections(), dos);
         }
@@ -34,58 +36,73 @@ public class DataStreamStrategy implements Serialization {
         }
     }
 
-    private void writeContacts(Map<ContactType, String> contacts, DataOutputStream dos) {
-        writeSize(contacts.size(), dos);
-        contacts.forEach((type, text) -> {
-            write(type.name(), dos);
-            write(text, dos);
+    private void writeContacts(Map<ContactType, String> contacts, DataOutputStream dos) throws IOException {
+        write(contacts, dos, (type, text) -> {
+            dos.writeUTF(type.name());
+            dos.writeUTF(text);
         });
     }
 
-    private void writeSections(Map<SectionType, Section> sections, DataOutputStream dos) {
-        for (Map.Entry<SectionType, Section> entry : sections.entrySet()) {
-            SectionType type = entry.getKey();
-            Section section = entry.getValue();
+    private void writeSections(Map<SectionType, Section> sections, DataOutputStream dos) throws IOException {
+        write(sections, dos, (type, section) -> {
+            dos.writeUTF(type.name());
             switch (type) {
-                case OBJECTIVE, PERSONAL -> write(type, (TextSection) section, dos);
-                case ACHIEVEMENT, QUALIFICATIONS -> write(type, (ListSection) section, dos);
-                case EXPERIENCE, EDUCATION -> write(type, (CompanySection) section, dos);
+                case OBJECTIVE, PERSONAL -> write((TextSection) section, s -> dos.writeUTF(s.getText()));
+                case ACHIEVEMENT, QUALIFICATIONS ->
+                        write((ListSection) section, s -> write(s.getItems(), dos, dos::writeUTF));
+                case EXPERIENCE, EDUCATION ->
+                        write((CompanySection) section, s -> writeCompanies(s.getCompanies(), dos));
             }
+        });
+    }
+
+    private void writeCompanies(List<Company> companies, DataOutputStream dos) throws IOException {
+        write(companies, dos, c -> {
+            dos.writeUTF(c.getName());
+            String website = c.getWebsite();
+            if (isNonNull(website, dos)) {
+                dos.writeUTF(website);
+            }
+            writePeriods(c.getPeriods(), dos);
+        });
+    }
+
+    private void writePeriods(List<Company.Period> periods, DataOutputStream dos) throws IOException {
+        write(periods, dos, p -> {
+            dos.writeUTF(p.getBeginDate().toString());
+            dos.writeUTF(p.getEndDate().toString());
+            dos.writeUTF(p.getTitle());
+            List<String> description = p.getDescription();
+            if (isNonNull(description, dos)) {
+                write(description, dos, (dos::writeUTF));
+            }
+        });
+    }
+
+    private <K, V> void write(Map<K, V> map, DataOutputStream dos, BiCustomConsumer<K, V> action) throws IOException {
+        dos.writeInt(map.size());
+        for (Map.Entry<K, V> entry : map.entrySet())
+            action.accept(entry.getKey(), entry.getValue());
+    }
+
+    private <T> void write(T section, CustomConsumer<T> action) throws IOException {
+        action.accept(section);
+    }
+
+    private <T> void write(List<T> list, DataOutputStream dos, CustomConsumer<T> action) throws IOException {
+        dos.writeInt(list.size());
+        for (T t : list) {
+            action.accept(t);
         }
     }
 
-    private void write(SectionType type, TextSection section, DataOutputStream dos) {
-        write(type.name(), dos);
-        write(section.getText(), dos);
-    }
-
-    private void write(SectionType type, ListSection section, DataOutputStream dos) {
-        write(type.name(), dos);
-        writeItems(section.getItems(), dos);
-    }
-
-    private void write(SectionType type, CompanySection section, DataOutputStream dos) {
-        write(type.name(), dos);
-        writeCompanies(section.getCompanies(), dos);
-    }
-
-    private void writeCompanies(List<Company> companies, DataOutputStream dos) {
-        writeSize(companies.size(), dos);
-        companies.forEach(x -> {
-            write(x.getName(), dos);
-            write(x.getWebsite(), dos);
-            writePeriods(x.getPeriods(), dos);
-        });
-    }
-
-    private void writePeriods(List<Company.Period> periods, DataOutputStream dos) {
-        writeSize(periods.size(), dos);
-        periods.forEach(p -> {
-            write(p.getBeginDate().toString(), dos);
-            write(p.getEndDate().toString(), dos);
-            write(p.getTitle(), dos);
-            writeItems(p.getDescription(), dos);
-        });
+    private <T> boolean isNonNull(T object, DataOutputStream dos) throws IOException {
+        if (object != null) {
+            dos.writeBoolean(true);
+            return true;
+        }
+        dos.writeBoolean(false);
+        return false;
     }
 
     private void addContacts(Resume resume, DataInputStream dis) {
@@ -98,6 +115,7 @@ public class DataStreamStrategy implements Serialization {
     }
 
     private void addSections(Resume resume, DataInputStream dis) throws IOException {
+        readSize(dis);
         while (dis.available() != 0) {
             SectionType type = SectionType.valueOf(read(dis));
             Map<SectionType, Section> sections = resume.getSections();
@@ -113,8 +131,11 @@ public class DataStreamStrategy implements Serialization {
         return Arrays.stream(new Company[readSize(dis)])
                 .map(x -> {
                     String name = read(dis);
-                    String website = read(dis);
-                    return new Company(name, website, getPeriods(dis));
+                    if (readBoolean(dis)) {
+                        String website = read(dis);
+                        return new Company(name, website, getPeriods(dis));
+                    }
+                    return new Company(name, getPeriods(dis));
                 })
                 .collect(Collectors.toList());
     }
@@ -125,37 +146,19 @@ public class DataStreamStrategy implements Serialization {
                     LocalDate beginDate = LocalDate.parse(read(dis));
                     LocalDate endDate = LocalDate.parse(read(dis));
                     String title = read(dis);
-                    List<String> description = getItems(dis);
-                    return new Company.Period(beginDate, endDate, title, description);
+                    if (readBoolean(dis)) {
+                        List<String> description = getItems(dis);
+                        return new Company.Period(beginDate, endDate, title, description);
+                    }
+                    return new Company.Period(beginDate, endDate, title);
                 })
                 .collect(Collectors.toList());
-    }
-
-    private void writeItems(List<String> items, DataOutputStream dos) {
-        writeSize(items.size(), dos);
-        items.forEach(x -> write(x, dos));
     }
 
     private List<String> getItems(DataInputStream dis) {
         return Arrays.stream(new String[readSize(dis)])
                 .map(x -> read(dis))
                 .collect(Collectors.toList());
-    }
-
-    private void write(String s, DataOutputStream dos) {
-        try {
-            dos.writeUTF(s);
-        } catch (IOException e) {
-            throw new StorageException("File write error", e);
-        }
-    }
-
-    private void writeSize(int size, DataOutputStream dos) {
-        try {
-            dos.writeInt(size);
-        } catch (IOException e) {
-            throw new StorageException("File write error", e);
-        }
     }
 
     private String read(DataInputStream dis) {
@@ -169,6 +172,14 @@ public class DataStreamStrategy implements Serialization {
     private int readSize(DataInputStream dis) {
         try {
             return dis.readInt();
+        } catch (IOException e) {
+            throw new StorageException("File read error", e);
+        }
+    }
+
+    private boolean readBoolean(DataInputStream dis) {
+        try {
+            return dis.readBoolean();
         } catch (IOException e) {
             throw new StorageException("File read error", e);
         }
