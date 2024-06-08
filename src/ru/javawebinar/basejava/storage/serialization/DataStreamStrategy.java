@@ -1,16 +1,14 @@
 package ru.javawebinar.basejava.storage.serialization;
 
-import ru.javawebinar.basejava.exception.StorageException;
 import ru.javawebinar.basejava.model.*;
 import ru.javawebinar.basejava.util.BiCustomConsumer;
 import ru.javawebinar.basejava.util.CustomConsumer;
 
 import java.io.*;
 import java.time.LocalDate;
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 public class DataStreamStrategy implements Serialization {
 
@@ -27,11 +25,11 @@ public class DataStreamStrategy implements Serialization {
     @Override
     public Resume doRead(InputStream is) throws IOException {
         try (DataInputStream dis = new DataInputStream(is)) {
-            String uuid = read(dis);
-            String fullName = read(dis);
+            String uuid = dis.readUTF();
+            String fullName = dis.readUTF();
             Resume resume = new Resume(uuid, fullName);
-            addContacts(resume, dis);
-            addSections(resume, dis);
+            readContacts(resume.getContacts(), dis);
+            readSections(resume.getSections(), dis);
             return resume;
         }
     }
@@ -79,6 +77,51 @@ public class DataStreamStrategy implements Serialization {
         });
     }
 
+    private void readContacts(Map<ContactType, String> contacts, DataInputStream dis) throws IOException {
+        read(contacts, dis, c -> c.put(ContactType.valueOf(dis.readUTF()), dis.readUTF()));
+    }
+
+    private void readSections(Map<SectionType, Section> sections, DataInputStream dis) throws IOException {
+        read(sections, dis, s -> {
+            SectionType type = SectionType.valueOf(dis.readUTF());
+            switch (type) {
+                case OBJECTIVE, PERSONAL -> s.put(type, new TextSection(dis.readUTF()));
+                case ACHIEVEMENT, QUALIFICATIONS -> s.put(type, new ListSection(getItems(dis)));
+                case EXPERIENCE, EDUCATION -> s.put(type, new CompanySection(getCompanies(dis)));
+            }
+        });
+    }
+
+    private List<Company> getCompanies(DataInputStream dis) throws IOException {
+        return readList(dis, c -> {
+            String name = dis.readUTF();
+            if (dis.readBoolean()) {
+                String website = dis.readUTF();
+                c.add(new Company(name, website, getPeriods(dis)));
+            } else {
+                c.add(new Company(name, getPeriods(dis)));
+            }
+        });
+    }
+
+    private List<Company.Period> getPeriods(DataInputStream dis) throws IOException {
+        return readList(dis, p -> {
+            LocalDate beginDate = LocalDate.parse(dis.readUTF());
+            LocalDate endDate = LocalDate.parse(dis.readUTF());
+            String title = dis.readUTF();
+            if (dis.readBoolean()) {
+                List<String> description = getItems(dis);
+                p.add(new Company.Period(beginDate, endDate, title, description));
+            } else {
+                p.add(new Company.Period(beginDate, endDate, title));
+            }
+        });
+    }
+
+    private List<String> getItems(DataInputStream dis) throws IOException {
+        return readList(dis, s -> s.add(dis.readUTF()));
+    }
+
     private <K, V> void write(Map<K, V> map, DataOutputStream dos, BiCustomConsumer<K, V> action) throws IOException {
         dos.writeInt(map.size());
         for (Map.Entry<K, V> entry : map.entrySet())
@@ -105,83 +148,19 @@ public class DataStreamStrategy implements Serialization {
         return false;
     }
 
-    private void addContacts(Resume resume, DataInputStream dis) {
-        Arrays.stream(new int[readSize(dis)])
-                .forEach(x -> {
-                    ContactType type = ContactType.valueOf(read(dis));
-                    String text = read(dis);
-                    resume.setContact(type, text);
-                });
-    }
-
-    private void addSections(Resume resume, DataInputStream dis) throws IOException {
-        readSize(dis);
-        while (dis.available() != 0) {
-            SectionType type = SectionType.valueOf(read(dis));
-            Map<SectionType, Section> sections = resume.getSections();
-            switch (type) {
-                case OBJECTIVE, PERSONAL -> sections.put(type, new TextSection(read(dis)));
-                case ACHIEVEMENT, QUALIFICATIONS -> sections.put(type, new ListSection(getItems(dis)));
-                case EXPERIENCE, EDUCATION -> sections.put(type, new CompanySection(getCompanies(dis)));
-            }
+    private <T> void read(T map, DataInputStream dis, CustomConsumer<T> action) throws IOException {
+        int size = dis.readInt();
+        for (int i = 0; i < size; i++) {
+            action.accept(map);
         }
     }
 
-    private List<Company> getCompanies(DataInputStream dis) {
-        return Arrays.stream(new Company[readSize(dis)])
-                .map(x -> {
-                    String name = read(dis);
-                    if (readBoolean(dis)) {
-                        String website = read(dis);
-                        return new Company(name, website, getPeriods(dis));
-                    }
-                    return new Company(name, getPeriods(dis));
-                })
-                .collect(Collectors.toList());
-    }
-
-    private List<Company.Period> getPeriods(DataInputStream dis) {
-        return Arrays.stream(new Company.Period[readSize(dis)])
-                .map(x -> {
-                    LocalDate beginDate = LocalDate.parse(read(dis));
-                    LocalDate endDate = LocalDate.parse(read(dis));
-                    String title = read(dis);
-                    if (readBoolean(dis)) {
-                        List<String> description = getItems(dis);
-                        return new Company.Period(beginDate, endDate, title, description);
-                    }
-                    return new Company.Period(beginDate, endDate, title);
-                })
-                .collect(Collectors.toList());
-    }
-
-    private List<String> getItems(DataInputStream dis) {
-        return Arrays.stream(new String[readSize(dis)])
-                .map(x -> read(dis))
-                .collect(Collectors.toList());
-    }
-
-    private String read(DataInputStream dis) {
-        try {
-            return dis.readUTF();
-        } catch (IOException e) {
-            throw new StorageException("File read error", e);
+    private <T> T readList(DataInputStream dis, CustomConsumer<T> action) throws IOException {
+        int size = dis.readInt();
+        T list = (T) new ArrayList<>();
+        for (int i = 0; i < size; i++) {
+            action.accept(list);
         }
-    }
-
-    private int readSize(DataInputStream dis) {
-        try {
-            return dis.readInt();
-        } catch (IOException e) {
-            throw new StorageException("File read error", e);
-        }
-    }
-
-    private boolean readBoolean(DataInputStream dis) {
-        try {
-            return dis.readBoolean();
-        } catch (IOException e) {
-            throw new StorageException("File read error", e);
-        }
+        return list;
     }
 }
