@@ -155,9 +155,9 @@ public class DataStreamStrategy implements Serialization {
         }
     }
 
-    private <T> T readList(DataInputStream dis, CustomConsumer<T> action) throws IOException {
+    private <T> List<T> readList(DataInputStream dis, CustomConsumer<List<T>> action) throws IOException {
         int size = dis.readInt();
-        T list = (T) new ArrayList<>();
+        List<T> list = new ArrayList<>();
         for (int i = 0; i < size; i++) {
             action.accept(list);
         }
