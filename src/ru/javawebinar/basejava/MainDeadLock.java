@@ -7,38 +7,32 @@ public class MainDeadLock {
 
     public static void main(String[] args) {
         new Thread(() -> {
-            System.out.println(getName() + " start");
-            method1();
+            System.out.println(getThreadName() + " start");
+            method(LOCK1, LOCK2, 1000);
         }).start();
 
         new Thread(() -> {
-            System.out.println(getName() + " start");
-            method2();
+            System.out.println(getThreadName() + " start");
+            method(LOCK2, LOCK1, 1000);
         }).start();
     }
 
-    private static void method1() {
-        synchronized (LOCK1) {
-            System.out.println(getName() + " get LOCK1 in method1");
-            sleep(1000);
-            synchronized (LOCK2) {
-                System.out.println(getName() + " get LOCK2 in method1");
-            }
-        }
-    }
-
-    private static void method2() {
-        synchronized (LOCK2) {
-            System.out.println(getName() + " get LOCK2 in method2");
-            sleep(1000);
-            synchronized (LOCK1) {
-                System.out.println(getName() + " get LOCK1 in method2");
-            }
-        }
-    }
-
-    private static String getName() {
+    private static String getThreadName() {
         return Thread.currentThread().getName();
+    }
+
+    private static void method(Object firstLock, Object secondLock, long millis) {
+        synchronized (firstLock) {
+            System.out.println(getThreadName() + " get " + getName(firstLock) + " in method");
+            sleep(millis);
+            synchronized (secondLock) {
+                System.out.println(getThreadName() + " get " + getName(secondLock) + " in method");
+            }
+        }
+    }
+
+    private static String getName(Object lock) {
+        return LOCK1.equals(lock) ? "LOCK1" : "LOCK2";
     }
 
     private static void sleep(long millis) {
