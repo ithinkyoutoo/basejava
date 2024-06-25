@@ -2,37 +2,29 @@ package ru.javawebinar.basejava;
 
 public class MainDeadLock {
 
-    private static final Object LOCK1 = new Object();
-    private static final Object LOCK2 = new Object();
+    private static final String LOCK1 = "LOCK1";
+    private static final String LOCK2 = "LOCK2";
 
     public static void main(String[] args) {
-        new Thread(() -> {
-            System.out.println(getThreadName() + " start");
-            method(LOCK1, LOCK2, 1000);
-        }).start();
+        method(LOCK1, LOCK2, 1000);
+        method(LOCK2, LOCK1, 1000);
+    }
 
+    private static void method(String firstLock, String secondLock, long millis) {
         new Thread(() -> {
             System.out.println(getThreadName() + " start");
-            method(LOCK2, LOCK1, 1000);
+            synchronized (firstLock) {
+                System.out.println(getThreadName() + " get " + firstLock + " in method");
+                sleep(millis);
+                synchronized (secondLock) {
+                    System.out.println(getThreadName() + " get " + secondLock + " in method");
+                }
+            }
         }).start();
     }
 
     private static String getThreadName() {
         return Thread.currentThread().getName();
-    }
-
-    private static void method(Object firstLock, Object secondLock, long millis) {
-        synchronized (firstLock) {
-            System.out.println(getThreadName() + " get " + getName(firstLock) + " in method");
-            sleep(millis);
-            synchronized (secondLock) {
-                System.out.println(getThreadName() + " get " + getName(secondLock) + " in method");
-            }
-        }
-    }
-
-    private static String getName(Object lock) {
-        return LOCK1.equals(lock) ? "LOCK1" : "LOCK2";
     }
 
     private static void sleep(long millis) {
