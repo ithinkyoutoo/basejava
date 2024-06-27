@@ -2,7 +2,6 @@ package ru.javawebinar.basejava;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 public class MainStream {
@@ -16,12 +15,10 @@ public class MainStream {
     }
 
     private static int minValue(int[] values) {
-        AtomicInteger count = new AtomicInteger();
         return Arrays.stream(values)
                 .distinct()
-                .peek(x -> count.getAndIncrement())
                 .sorted()
-                .reduce(0, (a, b) -> a + b * (int) Math.pow(10, count.getAndDecrement() - 1));
+                .reduce(0, (a, b) -> a * 10 + b);
     }
 
     private static int sum(List<Integer> integers) {
@@ -29,10 +26,11 @@ public class MainStream {
     }
 
     private static List<Integer> oddOrEven(List<Integer> integers) {
-        AtomicInteger sum = new AtomicInteger();
         return integers.stream()
-                .peek(sum::addAndGet)
-                .collect(Collectors.partitioningBy(x -> x % 2 == 0))
-                .get(sum.get() % 2 != 0);
+                .collect(Collectors.teeing(
+                        Collectors.summingInt(Integer::intValue),
+                        Collectors.partitioningBy(x -> x % 2 == 0),
+                        (sum, map) -> map.get(sum % 2 != 0)
+                ));
     }
 }
