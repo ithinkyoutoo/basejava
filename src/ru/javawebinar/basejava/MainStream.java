@@ -26,11 +26,9 @@ public class MainStream {
     }
 
     private static List<Integer> oddOrEven(List<Integer> integers) {
+        final int[] oddCount = {0};
         return integers.stream()
-                .collect(Collectors.teeing(
-                        Collectors.summingInt(Integer::intValue),
-                        Collectors.partitioningBy(x -> x % 2 == 0),
-                        (sum, map) -> map.get(sum % 2 != 0)
-                ));
+                .collect(Collectors.partitioningBy(x -> x % 2 == 0 || oddCount[0]++ < 0))
+                .get(oddCount[0] % 2 != 0);
     }
 }
