@@ -14,16 +14,10 @@ public class FileStorage extends AbstractStorage<File> {
     private final File directory;
     private Serialization strategy;
 
-    protected FileStorage(String dir, Serialization strategy) {
+    protected FileStorage(File dir, Serialization strategy) {
         Objects.requireNonNull(dir, "directory must not be null");
         Objects.requireNonNull(strategy, "Serialization strategy must not be null");
-        this.directory = new File(dir);
-        if (!directory.isDirectory()) {
-            throw new IllegalArgumentException(dir + " is not directory");
-        }
-        if (!directory.canRead() || !directory.canWrite()) {
-            throw new IllegalArgumentException(dir + " is not readable/writable");
-        }
+        this.directory = dir;
         this.strategy = strategy;
     }
 

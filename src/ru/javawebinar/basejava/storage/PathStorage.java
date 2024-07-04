@@ -4,10 +4,12 @@ import ru.javawebinar.basejava.exception.StorageException;
 import ru.javawebinar.basejava.model.Resume;
 import ru.javawebinar.basejava.storage.serialization.Serialization;
 
-import java.io.*;
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -18,16 +20,10 @@ public class PathStorage extends AbstractStorage<Path> {
     private final Path directory;
     private Serialization strategy;
 
-    protected PathStorage(String dir, Serialization strategy) {
+    protected PathStorage(File dir, Serialization strategy) {
         Objects.requireNonNull(dir, "directory must not be null");
         Objects.requireNonNull(strategy, "Serialization strategy must not be null");
-        directory = Paths.get(dir);
-        if (!Files.isDirectory(directory)) {
-            throw new IllegalArgumentException(dir + " is not directory");
-        }
-        if (!Files.isReadable(directory) || !Files.isWritable(directory)) {
-            throw new IllegalArgumentException(dir + " is not readable/writable");
-        }
+        directory = dir.toPath();
         this.strategy = strategy;
     }
 

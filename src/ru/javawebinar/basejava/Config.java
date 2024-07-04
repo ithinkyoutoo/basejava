@@ -1,5 +1,6 @@
 package ru.javawebinar.basejava;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -10,7 +11,7 @@ public class Config {
     private static final String PROPS = "config\\resumes.properties";
     private static final Config INSTANCE = new Config();
 
-    private final String storageDir;
+    private final File storageDir;
     private final String dbUrl;
     private final String dbUser;
     private final String dbPassword;
@@ -19,7 +20,7 @@ public class Config {
         try (InputStream is = new FileInputStream(PROPS)) {
             Properties props = new Properties();
             props.load(is);
-            storageDir = props.getProperty("storage.dir");
+            storageDir = checkDir(new File(props.getProperty("storage.dir")));
             dbUrl = props.getProperty("db.url");
             dbUser = props.getProperty("db.user");
             dbPassword = props.getProperty("db.password");
@@ -28,7 +29,7 @@ public class Config {
         }
     }
 
-    public static String getStorageDir() {
+    public static File getStorageDir() {
         return INSTANCE.storageDir;
     }
 
@@ -42,5 +43,15 @@ public class Config {
 
     public static String getDbPassword() {
         return INSTANCE.dbPassword;
+    }
+
+    private File checkDir(File dir) {
+        if (!dir.isDirectory()) {
+            throw new IllegalArgumentException(dir + " is not directory");
+        }
+        if (!dir.canRead() || !dir.canWrite()) {
+            throw new IllegalArgumentException(dir + " is not readable/writable");
+        }
+        return dir;
     }
 }
