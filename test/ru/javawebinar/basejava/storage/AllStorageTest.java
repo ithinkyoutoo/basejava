@@ -14,7 +14,8 @@ import org.junit.runners.Suite;
         PathStorageObjectStreamStrategyTest.class,
         PathStorageXmlStrategyTest.class,
         PathStorageJsonStrategyTest.class,
-        PathStorageDataStreamStrategyTest.class
+        PathStorageDataStreamStrategyTest.class,
+        SqlStorageTest.class
 })
 public class AllStorageTest {
 }

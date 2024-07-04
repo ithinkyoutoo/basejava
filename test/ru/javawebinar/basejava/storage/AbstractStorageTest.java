@@ -3,6 +3,7 @@ package ru.javawebinar.basejava.storage;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import ru.javawebinar.basejava.Config;
 import ru.javawebinar.basejava.exception.ExistStorageException;
 import ru.javawebinar.basejava.exception.NotExistStorageException;
 import ru.javawebinar.basejava.model.Resume;
@@ -14,12 +15,13 @@ import static ru.javawebinar.basejava.model.ResumeTestData.newResume;
 
 public abstract class AbstractStorageTest {
 
-    protected static final String STORAGE_DIR = "D:\\java\\basejava\\storage";
-    private static final String DUMMY = "dummy";
-    private static final String UUID_1 = "uuid1";
-    private static final String UUID_2 = "uuid2";
-    private static final String UUID_3 = "uuid3";
-    private static final String UUID_4 = "uuid4";
+    protected static final String STORAGE_DIR = Config.getStorageDir();
+    private static final int UUID_LENGTH = 36;
+    private static final String DUMMY = addSpaces("dummy");
+    private static final String UUID_1 = addSpaces("uuid1");
+    private static final String UUID_2 = addSpaces("uuid2");
+    private static final String UUID_3 = addSpaces("uuid3");
+    private static final String UUID_4 = addSpaces("uuid4");
     private static final String FULL_NAME_1 = "name1";
     private static final String FULL_NAME_2 = "name2";
     private static final String FULL_NAME_3 = "name3";
@@ -126,6 +128,10 @@ public abstract class AbstractStorageTest {
     @Test
     public void size() {
         assertSize(getLength());
+    }
+
+    private static String addSpaces(String uuid) {
+        return uuid + "_".repeat(UUID_LENGTH - uuid.length());
     }
 
     private void assertSize(int size) {
