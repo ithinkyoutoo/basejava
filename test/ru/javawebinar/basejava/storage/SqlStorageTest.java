@@ -5,6 +5,6 @@ import ru.javawebinar.basejava.Config;
 public class SqlStorageTest extends AbstractStorageTest {
 
     public SqlStorageTest() {
-        super(new SqlStorage(Config.getDbUrl(), Config.getDbUser(), Config.getDbPassword()));
+        super(Config.getSqlStorage());
     }
 }
