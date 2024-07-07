@@ -1,5 +1,6 @@
 package ru.javawebinar.basejava.storage;
 
+import ru.javawebinar.basejava.exception.NotExistStorageException;
 import ru.javawebinar.basejava.model.Resume;
 import ru.javawebinar.basejava.sql.SqlHelper;
 
@@ -26,40 +27,49 @@ public class SqlStorage implements Storage {
     public void update(Resume r) {
         String sql = "UPDATE resume r SET full_name = ? WHERE r.uuid = ?";
         String uuid = r.getUuid();
-        sqlHelper.execute(uuid, sql, (ps) -> {
+        sqlHelper.execute(sql, (ps) -> {
             ps.setString(1, r.getFullName());
             ps.setString(2, uuid);
-            return ps.executeUpdate() != 0;
+            if (ps.executeUpdate() == 0) {
+                throw new NotExistStorageException(uuid);
+            }
+            return null;
         });
     }
 
     @Override
     public void save(Resume r) {
         String sql = "INSERT INTO resume (uuid, full_name) VALUES (?,?)";
-        String uuid = r.getUuid();
-        sqlHelper.execute(uuid, sql, (ps) -> {
-            ps.setString(1, uuid);
+        sqlHelper.execute(sql, (ps) -> {
+            ps.setString(1, r.getUuid());
             ps.setString(2, r.getFullName());
-            return ps.executeUpdate();
+            ps.executeUpdate();
+            return null;
         });
     }
 
     @Override
     public Resume get(String uuid) {
         String sql = "SELECT * FROM resume r WHERE r.uuid = ?";
-        return sqlHelper.execute(uuid, sql, (ps) -> {
+        return sqlHelper.execute(sql, (ps) -> {
             ps.setString(1, uuid);
             ResultSet rs = ps.executeQuery();
-            return rs.next() ? new Resume(uuid, rs.getString("full_name")) : false;
+            if (!rs.next()) {
+                throw new NotExistStorageException(uuid);
+            }
+            return new Resume(uuid, rs.getString("full_name"));
         });
     }
 
     @Override
     public void delete(String uuid) {
         String sql = "DELETE FROM resume r WHERE r.uuid = ?";
-        sqlHelper.execute(uuid, sql, (ps) -> {
+        sqlHelper.execute(sql, (ps) -> {
             ps.setString(1, uuid);
-            return ps.executeUpdate() != 0;
+            if (ps.executeUpdate() == 0) {
+                throw new NotExistStorageException(uuid);
+            }
+            return null;
         });
     }
 
