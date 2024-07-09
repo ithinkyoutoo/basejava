@@ -80,7 +80,7 @@ public class SqlStorage implements Storage {
             List<Resume> resumes = new ArrayList<>();
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
-                resumes.add(get(rs.getString("uuid")));
+                resumes.add(new Resume(rs.getString("uuid"), rs.getString("full_name")));
             }
             return resumes;
         });
