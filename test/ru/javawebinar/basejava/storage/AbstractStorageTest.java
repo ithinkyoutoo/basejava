@@ -9,7 +9,7 @@ import ru.javawebinar.basejava.exception.NotExistStorageException;
 import ru.javawebinar.basejava.model.Resume;
 
 import java.io.File;
-import java.util.List;
+import java.util.*;
 
 import static org.junit.Assert.assertEquals;
 import static ru.javawebinar.basejava.model.ResumeTestData.newResume;
@@ -17,12 +17,11 @@ import static ru.javawebinar.basejava.model.ResumeTestData.newResume;
 public abstract class AbstractStorageTest {
 
     protected static final File STORAGE_DIR = Config.getStorageDir();
-    private static final int UUID_LENGTH = 36;
-    private static final String DUMMY = addSpaces("dummy");
-    private static final String UUID_1 = addSpaces("uuid1");
-    private static final String UUID_2 = addSpaces("uuid2");
-    private static final String UUID_3 = addSpaces("uuid3");
-    private static final String UUID_4 = addSpaces("uuid4");
+    private static final String DUMMY = "dummy";
+    private static final String UUID_1 = UUID.randomUUID().toString();
+    private static final String UUID_2 = UUID.randomUUID().toString();
+    private static final String UUID_3 = UUID.randomUUID().toString();
+    private static final String UUID_4 = UUID.randomUUID().toString();
     private static final String FULL_NAME_1 = "name1";
     private static final String FULL_NAME_2 = "name2";
     private static final String FULL_NAME_3 = "name3";
@@ -31,6 +30,8 @@ public abstract class AbstractStorageTest {
     private static final Resume RESUME_2 = newResume(UUID_2, FULL_NAME_2);
     private static final Resume RESUME_3 = newResume(UUID_3, FULL_NAME_3);
     private static final Resume RESUME_4 = newResume(UUID_4, FULL_NAME_4);
+    private static final Comparator<Resume> RESUME_COMPARATOR
+            = Comparator.comparing(Resume::getFullName).thenComparing(Resume::getUuid);
 
     protected final Storage storage;
 
@@ -116,23 +117,20 @@ public abstract class AbstractStorageTest {
 
     @Test
     public void getAllSorted() {
-        List<Resume> expected = List.of(RESUME_1, RESUME_2, RESUME_3);
+        List<Resume> expected = Arrays.asList(RESUME_1, RESUME_2, RESUME_3);
         assertList(expected);
         updateFullName(RESUME_2, FULL_NAME_1);
         updateFullName(RESUME_3, FULL_NAME_1);
+        expected.sort(RESUME_COMPARATOR);
         assertList(expected);
-        expected = List.of(RESUME_2, RESUME_3, RESUME_1);
         updateFullName(RESUME_1, FULL_NAME_3);
+        expected.sort(RESUME_COMPARATOR);
         assertList(expected);
     }
 
     @Test
     public void size() {
         assertSize(getLength());
-    }
-
-    private static String addSpaces(String uuid) {
-        return uuid + "_".repeat(UUID_LENGTH - uuid.length());
     }
 
     private void assertSize(int size) {
