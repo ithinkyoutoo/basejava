@@ -18,7 +18,7 @@ public class ResumeTestData {
 
     public static Resume newResume(String uuid, String fullName) {
         Resume r = new Resume(uuid, fullName);
-//        setContacts(r);
+        setContacts(r);
 //        setTextSections(r);
 //        setListSections(r);
 //        setCompanySections(r);
