@@ -6,12 +6,14 @@ import org.junit.Test;
 import ru.javawebinar.basejava.Config;
 import ru.javawebinar.basejava.exception.ExistStorageException;
 import ru.javawebinar.basejava.exception.NotExistStorageException;
+import ru.javawebinar.basejava.model.ContactType;
 import ru.javawebinar.basejava.model.Resume;
 
 import java.io.File;
 import java.util.*;
 
 import static org.junit.Assert.assertEquals;
+import static ru.javawebinar.basejava.model.ContactType.*;
 import static ru.javawebinar.basejava.model.ResumeTestData.newResume;
 
 public abstract class AbstractStorageTest {
@@ -27,6 +29,8 @@ public abstract class AbstractStorageTest {
     private static final String FULL_NAME_3 = "name3";
     private static final String FULL_NAME_4 = "name4";
     private static final Resume RESUME_1 = newResume(UUID_1, FULL_NAME_1);
+    private static final String T_VALUE = RESUME_1.getContact(TEL);
+    private static final String S_VALUE = RESUME_1.getContact(SKYPE);
     private static final Resume RESUME_2 = newResume(UUID_2, FULL_NAME_2);
     private static final Resume RESUME_3 = newResume(UUID_3, FULL_NAME_3);
     private static final Resume RESUME_4 = newResume(UUID_4, FULL_NAME_4);
@@ -48,8 +52,9 @@ public abstract class AbstractStorageTest {
     }
 
     @After
-    public void resetFullName() {
+    public void resetResumes() {
         RESUME_1.setFullName(FULL_NAME_1);
+        RESUME_1.setContact(TEL, T_VALUE);
         RESUME_2.setFullName(FULL_NAME_2);
         RESUME_3.setFullName(FULL_NAME_3);
     }
@@ -63,9 +68,18 @@ public abstract class AbstractStorageTest {
 
     @Test
     public void update() {
-        storage.update(newResume(UUID_1, FULL_NAME_4));
+        int size = storage.get(UUID_1).getContacts().size();
+        Resume newResume = newResume(UUID_1, FULL_NAME_4);
         RESUME_1.setFullName(FULL_NAME_4);
+        setContact(newResume, TEL, "+7(000) 000-0000");
+        delContact(newResume, SKYPE);
+        storage.update(newResume);
         assertEquals(RESUME_1, storage.get(UUID_1));
+        assertContactsSize(size - 1);
+        setContact(newResume, SKYPE, S_VALUE);
+        storage.update(newResume);
+        assertEquals(RESUME_1, storage.get(UUID_1));
+        assertContactsSize(size);
     }
 
     @Test(expected = NotExistStorageException.class)
@@ -135,6 +149,20 @@ public abstract class AbstractStorageTest {
 
     private void assertSize(int size) {
         assertEquals(size, storage.size());
+    }
+
+    private void setContact(Resume r, ContactType type, String value) {
+        r.setContact(type, value);
+        RESUME_1.setContact(type, value);
+    }
+
+    private void delContact(Resume r, ContactType type) {
+        r.getContacts().remove(type);
+        RESUME_1.getContacts().remove(type);
+    }
+
+    private void assertContactsSize(int size) {
+        assertEquals(size, storage.get(UUID_1).getContacts().size());
     }
 
     private int getLength() {
