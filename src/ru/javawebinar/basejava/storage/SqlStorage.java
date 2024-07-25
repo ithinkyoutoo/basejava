@@ -61,7 +61,7 @@ public class SqlStorage implements Storage {
     @Override
     public Resume get(String uuid) {
         String sql = """
-                SELECT *
+                SELECT r.full_name, c.type, c.value
                   FROM resume AS r
                        LEFT JOIN contact AS c
                        ON r.uuid = c.resume_uuid
@@ -74,7 +74,9 @@ public class SqlStorage implements Storage {
                 throw new NotExistStorageException(uuid);
             }
             Resume r = new Resume(uuid, rs.getString("full_name"));
-            addContact(rs, r);
+            do {
+                addContact(rs, r);
+            } while (rs.next());
             return r;
         });
     }
@@ -108,10 +110,14 @@ public class SqlStorage implements Storage {
             try (PreparedStatement ps = conn.prepareStatement("SELECT type, value, resume_uuid FROM contact")) {
                 ResultSet rs = ps.executeQuery();
                 if (rs.next()) {
+                    Resume r = resumes.get(rs.getString("resume_uuid"));
                     do {
-                        Resume r = resumes.get(rs.getString("resume_uuid"));
+                        String uuid = rs.getString("resume_uuid");
+                        if (!r.getUuid().equals(uuid)) {
+                            r = resumes.get(uuid);
+                        }
                         addContact(rs, r);
-                    } while (!rs.isAfterLast());
+                    } while (rs.next());
                 }
                 return new ArrayList<>(resumes.values());
             }
@@ -141,11 +147,9 @@ public class SqlStorage implements Storage {
     }
 
     private void addContact(ResultSet rs, Resume r) throws SQLException {
-        do {
-            String type = rs.getString("type");
-            if (type != null) {
-                r.setContact(ContactType.valueOf(type), rs.getString("value"));
-            }
-        } while (rs.next() && r.getUuid().equals(rs.getString("resume_uuid")));
+        String type = rs.getString("type");
+        if (type != null) {
+            r.setContact(ContactType.valueOf(type), rs.getString("value"));
+        }
     }
 }
