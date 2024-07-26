@@ -110,12 +110,8 @@ public class SqlStorage implements Storage {
             try (PreparedStatement ps = conn.prepareStatement("SELECT type, value, resume_uuid FROM contact")) {
                 ResultSet rs = ps.executeQuery();
                 if (rs.next()) {
-                    Resume r = resumes.get(rs.getString("resume_uuid"));
                     do {
-                        String uuid = rs.getString("resume_uuid");
-                        if (!r.getUuid().equals(uuid)) {
-                            r = resumes.get(uuid);
-                        }
+                        final Resume r = resumes.get(rs.getString("resume_uuid"));
                         addContact(rs, r);
                     } while (rs.next());
                 }
