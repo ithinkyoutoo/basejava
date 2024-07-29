@@ -44,14 +44,11 @@ public class SqlStorage implements Storage {
     @Override
     public void save(Resume r) {
         sqlHelper.transactionalExecute(conn -> {
-            String uuid = r.getUuid();
             try (PreparedStatement ps = conn.prepareStatement(
                     "INSERT INTO resume (uuid, full_name) VALUES (?,?)")) {
-                ps.setString(1, uuid);
+                ps.setString(1, r.getUuid());
                 ps.setString(2, r.getFullName());
-                if (ps.executeUpdate() == 0) {
-                    throw new NotExistStorageException(uuid);
-                }
+                ps.execute();
             }
             insertContacts(conn, r);
             return null;
@@ -109,11 +106,9 @@ public class SqlStorage implements Storage {
             }
             try (PreparedStatement ps = conn.prepareStatement("SELECT type, value, resume_uuid FROM contact")) {
                 ResultSet rs = ps.executeQuery();
-                if (rs.next()) {
-                    do {
-                        final Resume r = resumes.get(rs.getString("resume_uuid"));
-                        addContact(rs, r);
-                    } while (rs.next());
+                while (rs.next()) {
+                    final Resume r = resumes.get(rs.getString("resume_uuid"));
+                    addContact(rs, r);
                 }
                 return new ArrayList<>(resumes.values());
             }
