@@ -6,14 +6,17 @@ import org.junit.Test;
 import ru.javawebinar.basejava.Config;
 import ru.javawebinar.basejava.exception.ExistStorageException;
 import ru.javawebinar.basejava.exception.NotExistStorageException;
-import ru.javawebinar.basejava.model.ContactType;
 import ru.javawebinar.basejava.model.Resume;
 
 import java.io.File;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.List;
+import java.util.UUID;
 
 import static org.junit.Assert.assertEquals;
-import static ru.javawebinar.basejava.model.ContactType.*;
+import static ru.javawebinar.basejava.model.ContactType.SKYPE;
+import static ru.javawebinar.basejava.model.ContactType.TEL;
 import static ru.javawebinar.basejava.model.ResumeTestData.newResume;
 
 public abstract class AbstractStorageTest {
@@ -70,15 +73,14 @@ public abstract class AbstractStorageTest {
     public void update() {
         int size = storage.get(UUID_1).getContacts().size();
         Resume newResume = newResume(UUID_1, FULL_NAME_4);
-        RESUME_1.setFullName(FULL_NAME_4);
-        setContact(newResume, TEL, "+7(000) 000-0000");
-        delContact(newResume, SKYPE);
+        newResume.setContact(TEL, "+7(000) 000-0000");
+        newResume.getContacts().remove(SKYPE);
         storage.update(newResume);
-        assertEquals(RESUME_1, storage.get(UUID_1));
+        assertEquals(newResume, storage.get(UUID_1));
         assertContactsSize(size - 1);
-        setContact(newResume, SKYPE, S_VALUE);
+        newResume.setContact(SKYPE, S_VALUE);
         storage.update(newResume);
-        assertEquals(RESUME_1, storage.get(UUID_1));
+        assertEquals(newResume, storage.get(UUID_1));
         assertContactsSize(size);
     }
 
@@ -149,16 +151,6 @@ public abstract class AbstractStorageTest {
 
     private void assertSize(int size) {
         assertEquals(size, storage.size());
-    }
-
-    private void setContact(Resume r, ContactType type, String value) {
-        r.setContact(type, value);
-        RESUME_1.setContact(type, value);
-    }
-
-    private void delContact(Resume r, ContactType type) {
-        r.getContacts().remove(type);
-        RESUME_1.getContacts().remove(type);
     }
 
     private void assertContactsSize(int size) {
