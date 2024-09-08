@@ -16,3 +16,16 @@ CREATE TABLE contact (
 
 CREATE UNIQUE INDEX contact_uuid_type_index
     ON contact (resume_uuid, type);
+
+CREATE TABLE section (
+    PRIMARY KEY (id),
+    id          SERIAL,
+    type        TEXT      NOT NULL,
+    value       TEXT      NOT NULL,
+    resume_uuid CHAR(36)  NOT NULL
+                REFERENCES resume (uuid)
+                ON DELETE CASCADE
+);
+
+CREATE UNIQUE INDEX section_uuid_type_index
+    ON section (resume_uuid, type);
