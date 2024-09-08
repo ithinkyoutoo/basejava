@@ -19,8 +19,8 @@ public class ResumeTestData {
     public static Resume newResume(String uuid, String fullName) {
         Resume r = new Resume(uuid, fullName);
         setContacts(r);
-//        setTextSections(r);
-//        setListSections(r);
+        setTextSections(r);
+        setListSections(r);
 //        setCompanySections(r);
         return r;
     }
@@ -44,21 +44,21 @@ public class ResumeTestData {
 
     private static void setListSections(Resume r) {
         String text = """
-                Организация команды и успешная реализация Java проектов для сторонних заказчиков: приложения \s
-                автопарк на стеке Spring Cloud/микросервисы, система мониторинга показателей спортсменов на \s
-                Spring Boot, участие в проекте МЭШ на Play-2, многомодульный Spring Boot + Vaadin проект для \s
+                Организация команды и успешная реализация Java проектов для сторонних заказчиков: приложения
+                автопарк на стеке Spring Cloud/микросервисы, система мониторинга показателей спортсменов на
+                Spring Boot, участие в проекте МЭШ на Play-2, многомодульный Spring Boot + Vaadin проект для
                 комплексных DIY смет.
-                С 2013 года: разработка проектов "Разработка Web приложения","Java Enterprise", "Многомодульный \s
-                maven. Многопоточность. XML (JAXB/StAX). Веб сервисы (JAX-RS/SOAP). Удаленное взаимодействие \s
+                С 2013 года: разработка проектов "Разработка Web приложения","Java Enterprise", "Многомодульный
+                maven. Многопоточность. XML (JAXB/StAX). Веб сервисы (JAX-RS/SOAP). Удаленное взаимодействие
                 (JMS/AKKA)". Организация онлайн стажировок и ведение проектов. Более 3500 выпускников.
-                Реализация двухфакторной аутентификации для онлайн платформы управления проектами Wrike. \s
+                Реализация двухфакторной аутентификации для онлайн платформы управления проектами Wrike.
                 Интеграция с Twilio, DuoSecurity, Google Authenticator, Jira, Zendesk.
                 """;
         r.setSection(ACHIEVEMENT, new ListSection(text));
         text = """
                 JEE AS: GlassFish (v2.1, v3), OC4J, JBoss, Tomcat, Jetty, WebLogic, WSO2
                 Version control: Subversion, Git, Mercury, ClearCase, Perforce
-                DB: PostgreSQL(наследование, pgplsql, PL/Python), Redis (Jedis), H2, Oracle, MySQL, SQLite, MS SQL,\s
+                DB: PostgreSQL(наследование, pgplsql, PL/Python), Redis (Jedis), H2, Oracle, MySQL, SQLite, MS SQL,
                 HSQLDB
                 """;
         r.setSection(QUALIFICATIONS, new ListSection(text));
@@ -144,8 +144,8 @@ public class ResumeTestData {
     private static void printSections(Resume r) {
         for (Map.Entry<SectionType, Section> entry : r.getSections().entrySet()) {
             switch (entry.getKey()) {
-                case OBJECTIVE, PERSONAL -> System.out.println("\n" + entry.getKey() + "\n"
-                        + entry.getValue().toString());
+                case OBJECTIVE, PERSONAL -> System.out.println("\n" + entry.getKey().getTitle() + "\n"
+                        + entry.getValue());
                 case ACHIEVEMENT -> printListSection(entry, ACHIEVEMENT);
                 case QUALIFICATIONS -> printListSection(entry, QUALIFICATIONS);
                 case EXPERIENCE -> printCompanySection(entry, EXPERIENCE);
@@ -155,13 +155,13 @@ public class ResumeTestData {
     }
 
     private static void printListSection(Map.Entry<SectionType, Section> entry, SectionType type) {
-        System.out.println("\n" + type);
+        System.out.println("\n" + type.getTitle());
         ListSection list = (ListSection) entry.getValue();
         list.getItems().forEach(System.out::println);
     }
 
     private static void printCompanySection(Map.Entry<SectionType, Section> entry, SectionType type) {
-        System.out.println("\n" + type);
+        System.out.println("\n" + type.getTitle());
         CompanySection list = (CompanySection) entry.getValue();
         for (Company c : list.getCompanies()) {
             String website = c.getWebsite();
