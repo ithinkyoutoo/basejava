@@ -16,7 +16,7 @@ public class ListSection extends Section {
     }
 
     public ListSection(String description) {
-        this(new ArrayList<>(List.of(description.split("\\n"))));
+        this(new ArrayList<>(description.lines().map(String::strip).toList()));
     }
 
     public ListSection(List<String> items) {
@@ -50,8 +50,6 @@ public class ListSection extends Section {
 
     @Override
     public String toString() {
-        return "ListSection{" +
-                "list=" + items +
-                '}';
+        return items.stream().reduce("", (str, item) -> str + item + '\n');
     }
 }
