@@ -1,5 +1,6 @@
 package ru.javawebinar.basejava.web;
 
+import jakarta.servlet.ServletConfig;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
@@ -14,11 +15,14 @@ import java.util.List;
 
 public class ResumeServlet extends HttpServlet {
 
-    protected void doPost(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
+    private Storage storage;
 
+    @Override
+    public void init(ServletConfig config) throws ServletException {
+        storage = Config.getSqlStorage();
     }
 
+    @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         request.setCharacterEncoding("UTF-8");
@@ -33,12 +37,17 @@ public class ResumeServlet extends HttpServlet {
                 "</style></head>" +
                 "<body><table>" +
                 "<tr><th>uuid</th><th style=\"width: 37%\">full_name</th></tr>");
-        Storage storage = Config.getSqlStorage();
         String uuid = request.getParameter("uuid");
         List<Resume> resumes = uuid == null ? storage.getAllSorted() : List.of(storage.get(uuid));
         for (Resume r : resumes) {
             out.write("<tr><td>" + r.getUuid() + "</td><td>" + r.getFullName() + "</td></tr>");
         }
         out.write("</table></body></html>");
+    }
+
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+
     }
 }
