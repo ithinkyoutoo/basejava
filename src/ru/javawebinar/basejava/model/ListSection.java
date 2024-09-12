@@ -50,6 +50,8 @@ public class ListSection extends Section {
 
     @Override
     public String toString() {
-        return items.stream().reduce("", (str, item) -> str + item + '\n');
+        return "ListSection{" +
+                "items=" + items +
+                '}';
     }
 }

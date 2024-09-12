@@ -73,33 +73,38 @@ public class SqlStorage implements Storage {
 
     @Override
     public Resume get(String uuid) {
-        return sqlHelper.transactionalExecute(conn -> {
-            Resume r;
-            String sql = """
-                    SELECT r.full_name, c.type, c.value
-                      FROM resume AS r
-                           LEFT JOIN contact AS c
-                           ON r.uuid = c.resume_uuid
-                     WHERE r.uuid = ?
-                    """;
-            try (PreparedStatement ps = conn.prepareStatement(sql)) {
-                ps.setString(1, uuid);
-                ResultSet rs = ps.executeQuery();
-                if (!rs.next()) {
-                    throw new NotExistStorageException(uuid);
-                }
-                r = new Resume(uuid, rs.getString("full_name"));
-                do {
-                    addContact(rs, r);
-                } while (rs.next());
+        String sql = """
+                SELECT r.full_name, c.type, c.value
+                  FROM resume AS r
+                       LEFT JOIN contact AS c
+                       ON r.uuid = c.resume_uuid
+                 WHERE r.uuid = ?
+                 UNION
+                SELECT r.full_name, s.type, s.value
+                  FROM resume AS r
+                       LEFT JOIN section AS s
+                       ON r.uuid = s.resume_uuid
+                 WHERE r.uuid = ?;
+                """;
+        return sqlHelper.execute(sql, ps -> {
+            ps.setString(1, uuid);
+            ps.setString(2, uuid);
+            ResultSet rs = ps.executeQuery();
+            if (!rs.next()) {
+                throw new NotExistStorageException(uuid);
             }
-            try (PreparedStatement ps = conn.prepareStatement("SELECT * FROM section WHERE resume_uuid = ?")) {
-                ps.setString(1, uuid);
-                ResultSet rs = ps.executeQuery();
-                while (rs.next()) {
-                    addSection(rs, r);
+            Resume r = new Resume(uuid, rs.getString("full_name"));
+            do {
+                String type = rs.getString("type");
+                if (type != null) {
+                    try {
+                        ContactType.valueOf(type);
+                        addContact(rs, r);
+                    } catch (IllegalArgumentException e) {
+                        addSection(rs, r);
+                    }
                 }
-            }
+            } while (rs.next());
             return r;
         });
     }
@@ -174,8 +179,9 @@ public class SqlStorage implements Storage {
         try (PreparedStatement ps = conn.prepareStatement(
                 "INSERT INTO section (type, value, resume_uuid) VALUES (?, ?, ?)")) {
             for (Map.Entry<SectionType, Section> e : r.getSections().entrySet()) {
-                ps.setString(1, e.getKey().name());
-                ps.setString(2, e.getValue().toString());
+                SectionType type = e.getKey();
+                ps.setString(1, type.name());
+                ps.setString(2, toString(type, e.getValue()));
                 ps.setString(3, r.getUuid());
                 ps.addBatch();
             }
@@ -183,11 +189,17 @@ public class SqlStorage implements Storage {
         }
     }
 
+    private String toString(SectionType type, Section section) {
+        return switch (type) {
+            case OBJECTIVE, PERSONAL -> ((TextSection) section).getText();
+            case ACHIEVEMENT, QUALIFICATIONS -> ((ListSection) section).getItems().stream()
+                    .reduce("", (str, item) -> str + item + '\n');
+            case EXPERIENCE, EDUCATION -> "";
+        };
+    }
+
     private void addContact(ResultSet rs, Resume r) throws SQLException {
-        String type = rs.getString("type");
-        if (type != null) {
-            r.setContact(ContactType.valueOf(type), rs.getString("value"));
-        }
+        r.setContact(ContactType.valueOf(rs.getString("type")), rs.getString("value"));
     }
 
     private void addSection(ResultSet rs, Resume r) throws SQLException {
