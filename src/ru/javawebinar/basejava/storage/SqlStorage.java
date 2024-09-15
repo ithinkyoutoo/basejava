@@ -5,10 +5,7 @@ import ru.javawebinar.basejava.model.*;
 import ru.javawebinar.basejava.sql.SqlHelper;
 
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class SqlStorage implements Storage {
 
@@ -74,36 +71,24 @@ public class SqlStorage implements Storage {
     @Override
     public Resume get(String uuid) {
         String sql = """
-                SELECT r.full_name, c.type, c.value
+                SELECT r.full_name, c_type, c_value, s_type, s_value
                   FROM resume AS r
                        LEFT JOIN contact AS c
                        ON r.uuid = c.resume_uuid
-                 WHERE r.uuid = ?
-                 UNION
-                SELECT r.full_name, s.type, s.value
-                  FROM resume AS r
                        LEFT JOIN section AS s
                        ON r.uuid = s.resume_uuid
                  WHERE r.uuid = ?;
                 """;
         return sqlHelper.execute(sql, ps -> {
             ps.setString(1, uuid);
-            ps.setString(2, uuid);
             ResultSet rs = ps.executeQuery();
             if (!rs.next()) {
                 throw new NotExistStorageException(uuid);
             }
             Resume r = new Resume(uuid, rs.getString("full_name"));
             do {
-                String type = rs.getString("type");
-                if (type != null) {
-                    try {
-                        ContactType.valueOf(type);
-                        addContact(rs, r);
-                    } catch (IllegalArgumentException e) {
-                        addSection(rs, r);
-                    }
-                }
+                addContact(rs, r);
+                addSection(rs, r);
             } while (rs.next());
             return r;
         });
@@ -128,21 +113,21 @@ public class SqlStorage implements Storage {
                     "SELECT uuid, full_name FROM resume ORDER BY full_name, uuid")) {
                 ResultSet rs = ps.executeQuery();
                 if (!rs.next()) {
-                    return List.of();
+                    return Collections.emptyList();
                 }
                 do {
                     String uuid = rs.getString("uuid");
                     resumes.put(uuid, new Resume(uuid, rs.getString("full_name")));
                 } while (rs.next());
             }
-            try (PreparedStatement ps = conn.prepareStatement("SELECT type, value, resume_uuid FROM contact")) {
+            try (PreparedStatement ps = conn.prepareStatement("SELECT c_type, c_value, resume_uuid FROM contact")) {
                 ResultSet rs = ps.executeQuery();
                 while (rs.next()) {
                     final Resume r = resumes.get(rs.getString("resume_uuid"));
                     addContact(rs, r);
                 }
             }
-            try (PreparedStatement ps = conn.prepareStatement("SELECT type, value, resume_uuid FROM section")) {
+            try (PreparedStatement ps = conn.prepareStatement("SELECT s_type, s_value, resume_uuid FROM section")) {
                 ResultSet rs = ps.executeQuery();
                 while (rs.next()) {
                     final Resume r = resumes.get(rs.getString("resume_uuid"));
@@ -164,7 +149,7 @@ public class SqlStorage implements Storage {
 
     private void insertContacts(Connection conn, Resume r) throws SQLException {
         try (PreparedStatement ps = conn.prepareStatement(
-                "INSERT INTO contact (type, value, resume_uuid) VALUES (?, ?, ?)")) {
+                "INSERT INTO contact (c_type, c_value, resume_uuid) VALUES (?, ?, ?)")) {
             for (Map.Entry<ContactType, String> e : r.getContacts().entrySet()) {
                 ps.setString(1, e.getKey().name());
                 ps.setString(2, e.getValue());
@@ -177,7 +162,7 @@ public class SqlStorage implements Storage {
 
     private void insertSections(Connection conn, Resume r) throws SQLException {
         try (PreparedStatement ps = conn.prepareStatement(
-                "INSERT INTO section (type, value, resume_uuid) VALUES (?, ?, ?)")) {
+                "INSERT INTO section (s_type, s_value, resume_uuid) VALUES (?, ?, ?)")) {
             for (Map.Entry<SectionType, Section> e : r.getSections().entrySet()) {
                 SectionType type = e.getKey();
                 ps.setString(1, type.name());
@@ -199,15 +184,20 @@ public class SqlStorage implements Storage {
     }
 
     private void addContact(ResultSet rs, Resume r) throws SQLException {
-        r.setContact(ContactType.valueOf(rs.getString("type")), rs.getString("value"));
+        String type = rs.getString("c_type");
+        if (type != null) {
+            r.setContact(ContactType.valueOf(type), rs.getString("c_value"));
+        }
     }
 
     private void addSection(ResultSet rs, Resume r) throws SQLException {
-        SectionType type = SectionType.valueOf(rs.getString("type"));
-        String value = rs.getString("value");
-        switch (type) {
-            case OBJECTIVE, PERSONAL -> r.setSection(type, new TextSection(value));
-            case ACHIEVEMENT, QUALIFICATIONS -> r.setSection(type, new ListSection(value));
+        String value = rs.getString("s_value");
+        if (value != null) {
+            SectionType type = SectionType.valueOf(rs.getString("s_type"));
+            switch (type) {
+                case OBJECTIVE, PERSONAL -> r.setSection(type, new TextSection(value));
+                case ACHIEVEMENT, QUALIFICATIONS -> r.setSection(type, new ListSection(value));
+            }
         }
     }
 }
