@@ -12,9 +12,9 @@ import java.io.File;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
-import java.util.UUID;
 
 import static org.junit.Assert.assertEquals;
+import static ru.javawebinar.basejava.TestData.*;
 import static ru.javawebinar.basejava.model.ContactType.SKYPE;
 import static ru.javawebinar.basejava.model.ContactType.TEL;
 import static ru.javawebinar.basejava.model.ResumeTestData.newResume;
@@ -23,20 +23,8 @@ public abstract class AbstractStorageTest {
 
     protected static final File STORAGE_DIR = Config.getStorageDir();
     private static final String DUMMY = "dummy";
-    private static final String UUID_1 = UUID.randomUUID().toString();
-    private static final String UUID_2 = UUID.randomUUID().toString();
-    private static final String UUID_3 = UUID.randomUUID().toString();
-    private static final String UUID_4 = UUID.randomUUID().toString();
-    private static final String FULL_NAME_1 = "name1";
-    private static final String FULL_NAME_2 = "name2";
-    private static final String FULL_NAME_3 = "name3";
-    private static final String FULL_NAME_4 = "name4";
-    private static final Resume RESUME_1 = newResume(UUID_1, FULL_NAME_1);
-    private static final String T_VALUE = RESUME_1.getContact(TEL);
-    private static final String S_VALUE = RESUME_1.getContact(SKYPE);
-    private static final Resume RESUME_2 = newResume(UUID_2, FULL_NAME_2);
-    private static final Resume RESUME_3 = newResume(UUID_3, FULL_NAME_3);
-    private static final Resume RESUME_4 = newResume(UUID_4, FULL_NAME_4);
+    private static final String TEL_VALUE = RESUME_1.getContact(TEL);
+    private static final String SKYPE_VALUE = RESUME_1.getContact(SKYPE);
     private static final Comparator<Resume> RESUME_COMPARATOR
             = Comparator.comparing(Resume::getFullName).thenComparing(Resume::getUuid);
 
@@ -57,7 +45,7 @@ public abstract class AbstractStorageTest {
     @After
     public void resetResumes() {
         RESUME_1.setFullName(FULL_NAME_1);
-        RESUME_1.setContact(TEL, T_VALUE);
+        RESUME_1.setContact(TEL, TEL_VALUE);
         RESUME_2.setFullName(FULL_NAME_2);
         RESUME_3.setFullName(FULL_NAME_3);
     }
@@ -78,7 +66,7 @@ public abstract class AbstractStorageTest {
         storage.update(newResume);
         assertEquals(newResume, storage.get(UUID_1));
         assertContactsSize(size - 1);
-        newResume.setContact(SKYPE, S_VALUE);
+        newResume.setContact(SKYPE, SKYPE_VALUE);
         storage.update(newResume);
         assertEquals(newResume, storage.get(UUID_1));
         assertContactsSize(size);
