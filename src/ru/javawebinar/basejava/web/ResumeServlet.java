@@ -6,12 +6,9 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import ru.javawebinar.basejava.Config;
-import ru.javawebinar.basejava.model.Resume;
-import ru.javawebinar.basejava.model.ContactType;
 import ru.javawebinar.basejava.storage.Storage;
 
 import java.io.IOException;
-import java.io.Writer;
 
 public class ResumeServlet extends HttpServlet {
 
@@ -26,21 +23,8 @@ public class ResumeServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        request.setCharacterEncoding("UTF-8");
-        response.setCharacterEncoding("UTF-8");
-//        response.setContentType("text/html; charset=UTF-8");
-        Writer out = response.getWriter();
-        out.write("<html><head>" +
-                "<meta http-equiv=\"content-type\" content=\"text/html; charset=UTF-8\">" +
-                "<link rel=\"stylesheet\" href=\"css/style.css\">" +
-                "<title>Список всех резюме</title></head>" +
-                "<body><section><table>" +
-                "<tr><th>full_name</th><th>e-mail</th></tr>");
-        for (Resume r : storage.getAllSorted()) {
-            out.write("<tr><td><a href=\"resume?uuid=" + r.getUuid() + "\">" + r.getFullName() + "</a></td>" +
-                    "<td>" + r.getContact(ContactType.EMAIL) + "</td></tr>");
-        }
-        out.write("</table></section></body></html>");
+        request.setAttribute("resumes", storage.getAllSorted());
+        request.getRequestDispatcher("/WEB-INF/jsp/list.jsp").forward(request, response);
     }
 
     @Override
