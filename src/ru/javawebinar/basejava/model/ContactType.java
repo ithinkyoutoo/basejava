@@ -2,40 +2,40 @@ package ru.javawebinar.basejava.model;
 
 public enum ContactType {
     TEL("Тел."),
-    SKYPE("Skype") {
-        @Override
-        public String toHtml0(String value) {
-            return getTitle() + ": " + toLink("skype:" + value, value);
-        }
-    },
     EMAIL("Почта"){
         @Override
         public String toHtml0(String value) {
-            return getTitle() + ": " + toLink("mailto:" + value, value);
+            return toLink("mailto:" + value, value);
         }
     },
-    LINKEDIN("Профиль LinkedIn") {
+    SKYPE("Skype") {
         @Override
         public String toHtml0(String value) {
-            return toLink(value);
+            return toLink("skype:" + value, value);
         }
     },
-    GITHUB("Профиль GitHub") {
+    LINKEDIN("LinkedIn") {
         @Override
         public String toHtml0(String value) {
-            return toLink(value);
+            return toLink("https://" + value);
         }
     },
-    STACKOVERFLOW("Профиль Stackoverflow") {
+    GITHUB("GitHub") {
         @Override
         public String toHtml0(String value) {
-            return toLink(value);
+            return toLink("https://" + value);
+        }
+    },
+    STACKOVERFLOW("Stackoverflow") {
+        @Override
+        public String toHtml0(String value) {
+            return toLink("https://" + value);
         }
     },
     HOME_PAGE("Домашняя страница") {
         @Override
         public String toHtml0(String value) {
-            return toLink(value);
+            return toLink("https://" + value);
         }
     };
 
@@ -49,19 +49,19 @@ public enum ContactType {
         return title;
     }
 
-    protected String toHtml0(String value) {
-        return title + ": " + value;
-    }
-
     public String toHtml(String value) {
         return (value == null) ? "" : toHtml0(value);
     }
 
-    public String toLink(String href) {
+    protected String toHtml0(String value) {
+        return title + ": " + value;
+    }
+
+    protected String toLink(String href) {
         return toLink(href, title);
     }
 
-    public static String toLink(String href, String title) {
+    protected String toLink(String href, String title) {
         return "<a href='" + href + "'>" + title + "</a>";
     }
 }
