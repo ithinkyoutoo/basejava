@@ -1,15 +1,69 @@
 header {
     background: none repeat scroll 0 0 #A6C9E2;
     color: #2E6E9E;
+    width: 902px;
+    position: fixed;
+    top: 0;
     font-size: 20px;
     padding: 5px 20px;
-    /*text-align: center;*/
+    margin: auto 200px 20px;
 }
 
-/*section {*/
-/*    width: 900px;*/
-/*    margin: auto;*/
-/*}*/
+footer {
+    background: none repeat scroll 0 0 #A6C9E2;
+    color: #2E6E9E;
+    width: 902px;
+    position: fixed;
+    bottom: 0;
+    font-size: 15px;
+    text-align: center;
+    padding: 5px 20px;
+    margin: 20px 200px auto;
+}
+
+body {
+    padding-top: 30px;
+    padding-bottom: 30px;
+}
+
+section {
+    width: 750px;
+    margin: auto auto 20px;
+}
+
+section.edit {
+    width: 850px;
+    margin: auto;
+}
+
+hr.header {
+    width: 940px;
+    margin: 1px 200px 15px;
+}
+
+hr.view {
+    width: 750px;
+}
+
+hr.edit {
+    width: 850px;
+}
+
+h2, h3 {
+    margin: 25px 0 12px;
+}
+
+h3 {
+    padding-left: 8px;
+}
+
+div.view-section {
+    white-space: pre-line;
+}
+
+table {
+    margin: 10px auto;
+}
 
 table, tr {
     border: 1px solid black;
@@ -25,14 +79,19 @@ th {
 }
 
 th, td {
+    text-underline-color: black;
     text-align: center;
-    padding: 10px;
+    padding: 12px 20px 12px 20px;
+}
+
+form {
+    margin-top: 25px;
 }
 
 dl {
     background: none repeat scroll 0 0 #FAFAFA;
     margin: 8px 0;
-    padding: 0;
+    padding-left: 11px;
 }
 
 dt {
@@ -46,44 +105,44 @@ dd {
     vertical-align: top;
 }
 
-/*h2, h3 {*/
-/*    margin: 15px 0 5px;*/
-/*}*/
+textarea {
+    resize: none;
+}
 
 /*li {*/
 /*    margin: 150px 0;*/
 /*}*/
 
-/*a[href^="skype:"] {*/
-/*    padding-left: 20px !important;*/
-/*    background: url(../img/skype.png) no-repeat center left;*/
-/*}*/
+a {
+    text-decoration: none;
+    color: black;
+}
 
-/*a[href^="mailto:"] {*/
-/*    padding-left: 20px !important;*/
-/*    background: url(../img/email.png) no-repeat center left;*/
-/*}*/
+a:hover {
+    border-bottom: 1px solid black;
+}
 
-/*a[href^="https://stackoverflow.com"] {*/
-/*    padding-left: 20px !important;*/
-/*    background: url(../img/so.png) no-repeat center left;*/
-/*}*/
+a[href^="skype:"] {
+    padding-left: 20px !important;
+    background: url(../img/skype.png) no-repeat center left;
+}
 
-/*a[href^="https://www.linkedin.com"] {*/
-/*    padding-left: 20px !important;*/
-/*    background: url(../img/lin.png) no-repeat center left;*/
-/*}*/
+a[href^="mailto:"]:not(table a) {
+    padding-left: 20px !important;
+    background: url(../img/email.png) no-repeat center left;
+}
 
-/*a[href*="github."] {*/
-/*    padding-left: 20px !important;*/
-/*    background: url(../img/gh.png) no-repeat center left;*/
-/*}*/
+a[href^="https://www.stackoverflow.com"] {
+    padding-left: 20px !important;
+    background: url(../img/so.png) no-repeat center left;
+}
 
-footer {
-    background: none repeat scroll 0 0 #A6C9E2;
-    color: #2E6E9E;
-    font-size: 20px;
-    padding: 5px 20px;
-    margin: 20px 0;
-    /*text-align: center;*/
+a[href^="https://www.linkedin.com"] {
+    padding-left: 20px !important;
+    background: url(../img/lin.png) no-repeat center left;
+}
+
+a[href*="github."] {
+    padding-left: 20px !important;
+    background: url(../img/gh.png) no-repeat center left;
 }
