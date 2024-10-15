@@ -44,21 +44,21 @@ public class ResumeTestData {
 
     private static void setListSections(Resume r) {
         String text = """
-                Организация команды и успешная реализация Java проектов для сторонних заказчиков: приложения
-                автопарк на стеке Spring Cloud/микросервисы, система мониторинга показателей спортсменов на
-                Spring Boot, участие в проекте МЭШ на Play-2, многомодульный Spring Boot + Vaadin проект для
+                Организация команды и успешная реализация Java проектов для сторонних заказчиков: приложения \
+                автопарк на стеке Spring Cloud/микросервисы, система мониторинга показателей спортсменов на \
+                Spring Boot, участие в проекте МЭШ на Play-2, многомодульный Spring Boot + Vaadin проект для \
                 комплексных DIY смет.
-                С 2013 года: разработка проектов "Разработка Web приложения","Java Enterprise", "Многомодульный
-                maven. Многопоточность. XML (JAXB/StAX). Веб сервисы (JAX-RS/SOAP). Удаленное взаимодействие
+                С 2013 года: разработка проектов "Разработка Web приложения","Java Enterprise", "Многомодульный \
+                maven. Многопоточность. XML (JAXB/StAX). Веб сервисы (JAX-RS/SOAP). Удаленное взаимодействие \
                 (JMS/AKKA)". Организация онлайн стажировок и ведение проектов. Более 3500 выпускников.
-                Реализация двухфакторной аутентификации для онлайн платформы управления проектами Wrike.
+                Реализация двухфакторной аутентификации для онлайн платформы управления проектами Wrike. \
                 Интеграция с Twilio, DuoSecurity, Google Authenticator, Jira, Zendesk.
                 """;
         r.setSection(ACHIEVEMENT, new ListSection(text));
         text = """
                 JEE AS: GlassFish (v2.1, v3), OC4J, JBoss, Tomcat, Jetty, WebLogic, WSO2
                 Version control: Subversion, Git, Mercury, ClearCase, Perforce
-                DB: PostgreSQL(наследование, pgplsql, PL/Python), Redis (Jedis), H2, Oracle, MySQL, SQLite, MS SQL,
+                DB: PostgreSQL(наследование, pgplsql, PL/Python), Redis (Jedis), H2, Oracle, MySQL, SQLite, MS SQL, \
                 HSQLDB
                 """;
         r.setSection(QUALIFICATIONS, new ListSection(text));
@@ -86,8 +86,8 @@ public class ResumeTestData {
         LocalDate end = DateUtil.of(2016, JANUARY);
         String title = "Старший разработчик (backend)";
         String description = """
-                Проектирование и разработка онлайн платформы управления проектами Wrike (Java 8 API, Maven, Spring,\s
-                MyBatis, Guava, Vaadin, PostgreSQL, Redis). Двухфакторная аутентификация, авторизация по OAuth1,\s
+                Проектирование и разработка онлайн платформы управления проектами Wrike (Java 8 API, Maven, Spring, \
+                MyBatis, Guava, Vaadin, PostgreSQL, Redis). Двухфакторная аутентификация, авторизация по OAuth1, \
                 OAuth2, JWT SSO.
                 """;
         Company.Period period = new Company.Period(begin, end, title, description);
