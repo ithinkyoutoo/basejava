@@ -6,11 +6,11 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import ru.javawebinar.basejava.Config;
-import ru.javawebinar.basejava.model.ContactType;
-import ru.javawebinar.basejava.model.Resume;
+import ru.javawebinar.basejava.model.*;
 import ru.javawebinar.basejava.storage.Storage;
 
 import java.io.IOException;
+import java.util.List;
 
 public class ResumeServlet extends HttpServlet {
 
@@ -53,23 +53,54 @@ public class ResumeServlet extends HttpServlet {
             throws ServletException, IOException {
         request.setCharacterEncoding("UTF-8");
         String uuid = request.getParameter("uuid");
-        String fullName = request.getParameter("fullName");
+        String fullName = removeSpace(request.getParameter("fullName"));
         boolean isNewResume = uuid.isEmpty();
         Resume r = isNewResume ? new Resume(fullName) : storage.get(uuid);
         r.setFullName(fullName);
-        for (ContactType type : ContactType.values()) {
-            String value = request.getParameter(type.name());
-            if (value != null && !value.trim().isEmpty()) {
-                r.setContact(type, value);
-            } else {
-                r.getContacts().remove(type);
-            }
-        }
+        editContacts(r, request);
+        editSections(r, request);
         if (isNewResume) {
             storage.save(r);
         } else {
             storage.update(r);
         }
         response.sendRedirect("resume");
+    }
+
+    private String removeSpace(String str) {
+        return str.strip().replaceAll("\\s+", " ");
+    }
+
+    private void editContacts(Resume r, HttpServletRequest request) {
+        for (ContactType type : ContactType.values()) {
+            String value = removeSpace(request.getParameter(type.name()));
+            if (!value.isEmpty()) {
+                r.setContact(type, value);
+            } else {
+                r.getContacts().remove(type);
+            }
+        }
+    }
+
+    private void editSections(Resume r, HttpServletRequest request) {
+        for (SectionType type : SectionType.values()) {
+            String value = request.getParameter(type.name());
+            if (value != null && !value.trim().isEmpty()) {
+                r.setSection(type, switch (type) {
+                    case OBJECTIVE, PERSONAL -> new TextSection(removeSpace(value));
+                    case ACHIEVEMENT, QUALIFICATIONS -> new ListSection(getList(value));
+                    case EXPERIENCE, EDUCATION -> null;
+                });
+            } else {
+                r.getSections().remove(type);
+            }
+        }
+    }
+
+    private List<String> getList(String str) {
+        return str.lines()
+                .map(this::removeSpace)
+                .filter(s -> !s.isEmpty())
+                .toList();
     }
 }
