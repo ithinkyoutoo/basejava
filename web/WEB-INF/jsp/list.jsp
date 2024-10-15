@@ -1,4 +1,4 @@
-<%@ page import="ru.javawebinar.basejava.model.ContactType" %>
+<%@ page import="ru.javawebinar.basejava.util.HtmlUtil" %>
 <%@ page contentType="text/html; charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <html>
@@ -12,16 +12,15 @@
 <section>
     <table>
         <tr>
-            <th>full_name</th>
-            <th>e-mail</th>
+            <th>Имя</th>
+            <th>E-mail</th>
             <th></th>
             <th><a href="resume?action=edit"><img src="img/add.png"></a></th>
         </tr>
-        <c:forEach items="${resumes}" var="resume">
-            <jsp:useBean id="resume" type="ru.javawebinar.basejava.model.Resume"/>
+        <c:forEach var="resume" items="${resumes}">
             <tr>
                 <td><a href="resume?uuid=${resume.uuid}&action=view">${resume.fullName}</a></td>
-                <td><%=ContactType.EMAIL.toHtml(resume.getContact(ContactType.EMAIL))%></td>
+                <td>${HtmlUtil.getLink('EMAIL', resume)}</td>
                 <td><a href="resume?uuid=${resume.uuid}&action=edit"><img src="img/pencil.png"></a></td>
                 <td><a href="resume?uuid=${resume.uuid}&action=delete"><img src="img/delete.png"></a></td>
             </tr>
