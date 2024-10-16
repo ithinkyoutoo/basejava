@@ -20,14 +20,14 @@
             <dt>Имя:</dt>
             <dd><input type="text" name="fullName" size=45 value="${resume.fullName}"></dd>
         </dl>
-        <h3>Контакты:</h3>
+        <h3 class="edit">Контакты:</h3>
         <c:forEach var="type" items="${ContactType.values()}">
             <dl>
                 <dt>${type.title}</dt>
                 <dd><input type="text" name="${type.name()}" size=45 value="${resume.getContact(type)}"></dd>
             </dl>
         </c:forEach>
-        <h3>Информация:</h3>
+        <h3 class="edit">Информация:</h3>
         <c:forEach var="type" items="${SectionType.values()}">
             <c:set var="typeName" value="${type.name()}"/>
             <c:set var="section" value="${resume.getSection(type)}"/>

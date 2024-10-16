@@ -1,12 +1,13 @@
 header {
     background: none repeat scroll 0 0 #A6C9E2;
     color: #2E6E9E;
-    width: 902px;
+    width: 900px;
     position: fixed;
     top: 0;
+    left: 50%;
+    transform: translate(-50%);
     font-size: 20px;
     padding: 5px 20px;
-    margin: auto 200px 20px;
 }
 
 footer {
@@ -15,30 +16,34 @@ footer {
     width: 902px;
     position: fixed;
     bottom: 0;
+    left: 50%;
+    transform: translate(-50%);
     font-size: 15px;
     text-align: center;
     padding: 5px 20px;
-    margin: 20px 200px auto;
 }
 
 body {
+    overflow: scroll;
+    overflow-x: hidden;
+    scrollbar-gutter: stable;
     padding-top: 30px;
     padding-bottom: 30px;
 }
 
-section {
-    width: 750px;
-    margin: auto auto 20px;
-}
-
-section.edit {
+section.table, section.edit {
     width: 850px;
     margin: auto;
 }
 
+section.view {
+    width: 750px;
+    margin: auto auto 20px;
+}
+
 hr.header {
-    width: 940px;
-    margin: 1px 200px 15px;
+    width: 938px;
+    margin-top: 1px;
 }
 
 hr.view {
@@ -53,8 +58,12 @@ h2, h3 {
     margin: 25px 0 12px;
 }
 
-h3 {
-    padding-left: 8px;
+h3.edit {
+    margin-left: 8px;
+}
+
+h4.view {
+    margin: 22px 0 12px;
 }
 
 div.view-section {
@@ -62,7 +71,7 @@ div.view-section {
 }
 
 table {
-    margin: 10px auto;
+    margin: 20px auto;
 }
 
 table, tr {
@@ -81,7 +90,7 @@ th {
 th, td {
     text-underline-color: black;
     text-align: center;
-    padding: 12px 20px 12px 20px;
+    padding: 12px 20px;
 }
 
 form {

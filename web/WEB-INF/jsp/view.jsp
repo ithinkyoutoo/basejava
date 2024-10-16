@@ -10,7 +10,7 @@
 </head>
 <body>
 <jsp:include page="fragments/header.jsp"/>
-<section>
+<section class="view">
     <h2>${resume.fullName}&nbsp;<a href="resume?uuid=${resume.uuid}&action=edit"><img src="img/pencil.png"></a></h2>
     <p>
         <c:forEach var="contactEntry" items="${resume.contacts}">
@@ -19,13 +19,13 @@
     <p>
     <hr class="view"/>
 </section>
-<section>
+<section class="view">
     <p>
         <c:forEach var="sectionEntry" items="${resume.sections}">
             <c:set var="type" value="${sectionEntry.key}"/>
             <c:set var="typeName" value="${type.name()}"/>
             <c:set var="section" value="${sectionEntry.value}"/>
-            <h4>${type.title}</h4>
+            <h4 class="view">${type.title}</h4>
             <c:choose>
                 <c:when test="${'OBJECTIVE'.equals(typeName) || 'PERSONAL'.equals(typeName)}">
                     ${section.text}

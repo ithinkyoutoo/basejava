@@ -9,7 +9,7 @@
 </head>
 <body>
 <jsp:include page="fragments/header.jsp"/>
-<section>
+<section class="table">
     <table>
         <tr>
             <th>Имя</th>
