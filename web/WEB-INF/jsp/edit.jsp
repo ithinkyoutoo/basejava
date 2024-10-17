@@ -13,12 +13,11 @@
 <body>
 <jsp:include page="fragments/header.jsp"/>
 <section class="edit">
-    <form method="post" action="resume" name="form" onsubmit="return checkName()"
-          enctype="application/x-www-form-urlencoded">
+    <form method="post" action="resume" name="form" enctype="application/x-www-form-urlencoded">
         <input type="hidden" name="uuid" value="${resume.uuid}">
         <dl>
             <dt>Имя:</dt>
-            <dd><input type="text" name="fullName" size=45 value="${resume.fullName}"></dd>
+            <dd><input type="text" name="fullName" size=45 value="${resume.fullName}" required pattern=".*\S.*"></dd>
         </dl>
         <h3 class="edit">Контакты:</h3>
         <c:forEach var="type" items="${ContactType.values()}">
@@ -53,10 +52,5 @@
     </form>
 </section>
 <jsp:include page="fragments/footer.jsp"/>
-<script>
-    function checkName() {
-        return document.form.fullName.value.trim() !== "";
-    }
-</script>
 </body>
 </html>
