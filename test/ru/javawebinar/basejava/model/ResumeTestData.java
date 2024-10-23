@@ -21,7 +21,7 @@ public class ResumeTestData {
         setContacts(r);
         setTextSections(r);
         setListSections(r);
-//        setCompanySections(r);
+        setCompanySections(r);
         return r;
     }
 

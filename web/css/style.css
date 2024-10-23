@@ -29,14 +29,9 @@ body {
     padding-bottom: 30px;
 }
 
-section.table, section.edit {
+section {
     width: 850px;
     margin: auto;
-}
-
-section.view {
-    width: 750px;
-    margin: auto auto 20px;
 }
 
 hr.header {
@@ -44,28 +39,8 @@ hr.header {
     margin-top: 1px;
 }
 
-hr.view {
-    width: 750px;
-}
-
-hr.edit {
-    width: 850px;
-}
-
 h2, h3 {
     margin: 25px 0 12px;
-}
-
-h3.edit {
-    margin-left: 8px;
-}
-
-h4.view {
-    margin: 22px 0 12px;
-}
-
-div.view-section {
-    white-space: pre-line;
 }
 
 table {
@@ -94,30 +69,9 @@ form {
     margin-top: 25px;
 }
 
-dl {
-    background: none repeat scroll 0 0 #FAFAFA;
-    margin: 8px 0;
-    padding-left: 11px;
-}
-
-dt {
-    display: inline-block;
-    width: 170px;
-}
-
-dd {
-    display: inline-block;
-    margin-left: 8px;
-    vertical-align: top;
-}
-
 textarea {
     resize: none;
 }
-
-/*li {*/
-/*    margin: 150px 0;*/
-/*}*/
 
 a {
     text-decoration: none;

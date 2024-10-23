@@ -9,7 +9,7 @@
 </head>
 <body>
 <jsp:include page="fragments/header.jsp"/>
-<section class="table">
+<section>
     <table>
         <tr>
             <th>Имя</th>
@@ -20,7 +20,7 @@
         <c:forEach var="resume" items="${resumes}">
             <tr>
                 <td><a href="resume?uuid=${resume.uuid}&action=view">${resume.fullName}</a></td>
-                <td>${HtmlUtil.getLink('EMAIL', resume)}</td>
+                <td>${HtmlUtil.getContactLink('EMAIL', resume)}</td>
                 <td><a href="resume?uuid=${resume.uuid}&action=edit"><img src="img/pencil.png"></a></td>
                 <td><a href="resume?uuid=${resume.uuid}&action=delete"><img src="img/delete.png"></a></td>
             </tr>

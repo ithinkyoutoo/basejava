@@ -7,9 +7,13 @@ import java.util.List;
 
 public class HtmlUtil {
 
-    public static String getLink(String str, Resume r) {
-        ContactType type = ContactType.valueOf(str);
+    public static String getContactLink(String contact, Resume r) {
+        ContactType type = ContactType.valueOf(contact);
         return type.toHtml(r.getContact(type));
+    }
+
+    public static String getCompanyLink(String website) {
+        return website.isEmpty() ? "#no_scroll" : "https://" + website;
     }
 
     public static String getString(List<String> items) {

@@ -1,0 +1,41 @@
+hr {
+    width: 850px;
+}
+
+dl {
+    background: none repeat scroll 0 0 #FAFAFA;
+    margin: 8px 0;
+    padding-left: 11px;
+}
+
+dl.company {
+    margin-top: 30px;
+    margin-bottom: 15px;
+}
+
+dl.period {
+    margin-bottom: 10px;
+}
+
+dt {
+    display: inline-block;
+    width: 170px;
+}
+
+dt.company {
+    margin-bottom: 6px;
+}
+
+dt.period {
+    margin-bottom: 6px;
+}
+
+dd {
+    display: inline-block;
+    margin-left: 8px;
+    vertical-align: top;
+}
+
+.name, .date {
+    font-size: 13px;
+}

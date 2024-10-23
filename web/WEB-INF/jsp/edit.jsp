@@ -1,32 +1,34 @@
 <%@ page import="ru.javawebinar.basejava.model.ContactType" %>
 <%@ page import="ru.javawebinar.basejava.model.SectionType" %>
 <%@ page import="ru.javawebinar.basejava.util.HtmlUtil" %>
+<%@ page import="ru.javawebinar.basejava.util.DateUtil" %>
 <%@ page contentType="text/html; charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <html>
 <head>
     <meta http-equiv="content-type" content="text/html; charset=UTF-8">
     <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/edit.css">
     <jsp:useBean id="resume" type="ru.javawebinar.basejava.model.Resume" scope="request"/>
     <title>Резюме ${resume.fullName}</title>
 </head>
 <body>
 <jsp:include page="fragments/header.jsp"/>
-<section class="edit">
+<section>
     <form method="post" action="resume" name="form" enctype="application/x-www-form-urlencoded">
         <input type="hidden" name="uuid" value="${resume.uuid}">
         <dl>
-            <dt>Имя:</dt>
+            <dt>Имя <span class="name">(обязательно)</span></dt>
             <dd><input type="text" name="fullName" size=45 value="${resume.fullName}" required pattern=".*\S.*"></dd>
         </dl>
-        <h3 class="edit">Контакты:</h3>
+        <h3>Контакты:</h3>
         <c:forEach var="type" items="${ContactType.values()}">
             <dl>
                 <dt>${type.title}</dt>
                 <dd><input type="text" name="${type.name()}" size=45 value="${resume.getContact(type)}"></dd>
             </dl>
         </c:forEach>
-        <h3 class="edit">Информация:</h3>
+        <h3>Информация:</h3>
         <c:forEach var="type" items="${SectionType.values()}">
             <c:set var="typeName" value="${type.name()}"/>
             <c:set var="section" value="${resume.getSection(type)}"/>
@@ -44,9 +46,28 @@
                         <dd><textarea name="${typeName}" cols="85" rows="6">${items}</textarea></dd>
                     </dl>
                 </c:when>
+                <c:when test="${'EXPERIENCE'.equals(typeName) || 'EDUCATION'.equals(typeName)}">
+                    <h3>${type.title}:</h3>
+                    <input type="hidden" name="${typeName}" value="${typeName}">
+                    <c:set var="countCompany" value="0"/>
+                    <c:set var="countPeriod" value="0"/>
+                    <%@ include file="fragments/company.jsp" %>
+                    <%@ include file="fragments/period.jsp" %>
+                    <input type="hidden" name="${typeName}company${countCompany}periodSize" value="${countPeriod}">
+                    <c:forEach var="company" items="${section.companies}">
+                        <c:set var="countPeriod" value="0"/>
+                        <%@ include file="fragments/company.jsp" %>
+                        <%@ include file="fragments/period.jsp" %>
+                        <c:forEach var="period" items="${company.periods}">
+                            <%@ include file="fragments/period.jsp" %>
+                        </c:forEach>
+                        <input type="hidden" name="${typeName}company${countCompany}periodSize" value="${countPeriod}">
+                    </c:forEach>
+                    <input type="hidden" name="${typeName}companySize" value="${countCompany}">
+                </c:when>
             </c:choose>
         </c:forEach>
-        <hr class="edit"/>
+        <hr/>
         <button type="submit">Сохранить</button>
         <button type="reset" onclick="window.history.back()">Отменить</button>
     </form>
