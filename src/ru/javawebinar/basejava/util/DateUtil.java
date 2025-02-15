@@ -2,29 +2,37 @@ package ru.javawebinar.basejava.util;
 
 import java.time.LocalDate;
 import java.time.Month;
+import java.time.YearMonth;
+import java.time.format.DateTimeFormatter;
 import java.time.format.TextStyle;
 import java.util.Locale;
 
 public class DateUtil {
 
     public static final LocalDate NOW = LocalDate.of(3000, 1, 1);
+    private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("MM/yyyy");
 
     public static LocalDate of(int year, Month month) {
         return LocalDate.of(year, month, 1);
     }
 
-    public static String getString(LocalDate date) {
+    public static LocalDate parse(String str) {
+        if (str.isEmpty() || "н. в.".equals(str)) {
+            return NOW;
+        }
+        YearMonth date = YearMonth.parse(str, FORMATTER);
+        return LocalDate.of(date.getYear(), date.getMonth(), 1);
+    }
+
+    public static String format(LocalDate date) {
         if (date == null) {
             return "";
         }
-        if (DateUtil.NOW.equals(date)) {
-            return "н. в.";
-        }
-        return date.getMonthValue() + "/" + date.getYear();
+        return NOW.equals(date) ? "н. в." : date.format(FORMATTER);
     }
 
     public static String getFullString(LocalDate date) {
-        if (DateUtil.NOW.equals(date)) {
+        if (NOW.equals(date)) {
             return "н. в.";
         }
         String month = date.getMonth().getDisplayName(TextStyle.FULL_STANDALONE, new Locale("ru"));

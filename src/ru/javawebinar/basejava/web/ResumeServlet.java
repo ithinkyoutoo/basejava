@@ -12,7 +12,6 @@ import ru.javawebinar.basejava.util.DateUtil;
 
 import java.io.IOException;
 import java.time.LocalDate;
-import java.time.Month;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -125,22 +124,14 @@ public class ResumeServlet extends HttpServlet {
             String[] values = request.getParameterValues(type + "company" + companyNum + "period" + i);
             String date = values[0];
             if (!date.isEmpty()) {
-                LocalDate begin = getDate(date);
-                LocalDate end = getDate(values[1]);
+                LocalDate begin = DateUtil.parse(date);
+                LocalDate end = DateUtil.parse(values[1]);
                 String title = removeSpace(values[2]);
                 List<String> description = getList(values[3]);
                 periods.add(new Company.Period(begin, end, title, description));
             }
         }
         return periods;
-    }
-
-    private LocalDate getDate(String str) {
-        if (str.isEmpty() || "н. в.".equals(str)) {
-            return DateUtil.NOW;
-        }
-        String[] date = str.split("/");
-        return LocalDate.of(Integer.parseInt(date[1]), Month.of(Integer.parseInt(date[0])), 1);
     }
 
     private String removeSpace(String str) {

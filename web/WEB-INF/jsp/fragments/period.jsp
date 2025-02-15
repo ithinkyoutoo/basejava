@@ -1,16 +1,16 @@
 <%@ page contentType="text/html; charset=UTF-8" language="java" %>
 
 <dl class="period">
-    <dt class="period">Период <span class="date">(м/гггг)</span></dt>
+    <dt class="period">Период <span class="date">(мм/гггг)</span></dt>
     <dd class="period">
         <label>начало</label>
         <input type="text" name="${typeName}company${countCompany}period${countPeriod = countPeriod + 1}" size=10
-               value="${DateUtil.getString(period.beginDate)}" pattern="^([1-9]|1[0-2])\/(19|20)[0-9]{2}$">
+               value="${DateUtil.format(period.beginDate)}" pattern="^(0[1-9]|1[0-2])\/(19|20)[0-9]{2}$">
     </dd>
     <dd class="period">
         <label>окончание</label>
         <input type="text" name="${typeName}company${countCompany}period${countPeriod}" size=10
-               value="${DateUtil.getString(period.endDate)}" pattern="^([1-9]|1[0-2])\/(19|20)[0-9]{2}$|(н. в.)">
+               value="${DateUtil.format(period.endDate)}" pattern="^(0[1-9]|1[0-2])\/(19|20)[0-9]{2}$|(н. в.)">
     </dd>
     <br/>
     <dt class="period">Должность</dt>
