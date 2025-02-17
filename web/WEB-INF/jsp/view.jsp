@@ -1,5 +1,4 @@
 <%@ page import="ru.javawebinar.basejava.util.HtmlUtil" %>
-<%@ page import="ru.javawebinar.basejava.util.DateUtil" %>
 <%@ page contentType="text/html; charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <html>
@@ -7,7 +6,6 @@
     <meta http-equiv="content-type" content="text/html; charset=UTF-8">
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="css/view.css">
-    <jsp:useBean id="resume" type="ru.javawebinar.basejava.model.Resume" scope="request"/>
     <title>Резюме ${resume.fullName}</title>
 </head>
 <body>
@@ -25,27 +23,27 @@
     <p>
         <c:forEach var="sectionEntry" items="${resume.sections}">
             <c:set var="type" value="${sectionEntry.key}"/>
-            <c:set var="typeName" value="${type.name()}"/>
             <c:set var="section" value="${sectionEntry.value}"/>
             <h3>${type.title}</h3>
             <c:choose>
-                <c:when test="${'OBJECTIVE'.equals(typeName) || 'PERSONAL'.equals(typeName)}">
+                <c:when test="${type == 'OBJECTIVE' || type == 'PERSONAL'}">
                     ${section.text}
                 </c:when>
-                <c:when test="${'ACHIEVEMENT'.equals(typeName) || 'QUALIFICATIONS'.equals(typeName)}">
-                    <div class="list-section">${HtmlUtil.getString(section.items)}</div>
+                <c:when test="${type == 'ACHIEVEMENT' || type == 'QUALIFICATIONS'}">
+                    <ul>
+                        <c:forEach var="item" items="${section.items}">
+                            <li>${item}</li>
+                        </c:forEach>
+                    </ul>
                 </c:when>
-                <c:when test="${'EXPERIENCE'.equals(typeName) || 'EDUCATION'.equals(typeName)}">
+                <c:when test="${type == 'EXPERIENCE' || type == 'EDUCATION'}">
                     <c:forEach var="company" items="${section.companies}">
                         <div class="company-title">
                             <b><a href="${HtmlUtil.getCompanyLink(company.website)}">${company.name}</a></b>
                         </div>
                         <c:forEach var="period" items="${company.periods}">
                             <dl>
-                                <dt>
-                                    ${DateUtil.getFullString(period.beginDate)}
-                                    - ${DateUtil.getFullString(period.endDate)}
-                                </dt>
+                                <dt>${HtmlUtil.formatDates(period)}</dt>
                                 <dd>${period.title}</dd>
                                 <dd class="description">${HtmlUtil.getString(period.description)}</dd>
                             </dl>
@@ -55,6 +53,7 @@
             </c:choose>
         </c:forEach>
     <p>
+    <button onclick="window.history.back()">Назад</button>
 </section>
 <jsp:include page="fragments/footer.jsp"/>
 </body>

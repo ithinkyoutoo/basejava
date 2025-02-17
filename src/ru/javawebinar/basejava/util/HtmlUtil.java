@@ -1,5 +1,6 @@
 package ru.javawebinar.basejava.util;
 
+import ru.javawebinar.basejava.model.Company;
 import ru.javawebinar.basejava.model.ContactType;
 import ru.javawebinar.basejava.model.Resume;
 
@@ -18,5 +19,9 @@ public class HtmlUtil {
 
     public static String getString(List<String> items) {
         return items == null ? "" : items.stream().reduce("", (str, item) -> str + item + "\n");
+    }
+
+    public static String formatDates(Company.Period period) {
+        return DateUtil.getFullString(period.getBeginDate()) + " - " + DateUtil.getFullString(period.getEndDate());
     }
 }
