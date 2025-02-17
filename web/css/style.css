@@ -78,7 +78,7 @@ a {
     color: black;
 }
 
-a:hover {
+a:hover:not(a[href*="javascript:void(0)"]) {
     border-bottom: 1px solid black;
 }
 
