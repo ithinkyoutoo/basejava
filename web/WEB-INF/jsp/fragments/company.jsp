@@ -3,12 +3,12 @@
 <dl class="company">
     <dt class="company">Организация</dt>
     <dd class="company">
-        <input type="text" name="${typeName}company${countCompany = countCompany + 1}" size=91
+        <input type="text" name="${type}company${countCompany = countCompany + 1}" size=91
                value="${company.name}">
     </dd>
     <dt class="company">Сайт</dt>
     <dd class="company">
-        <input type="text" name="${typeName}company${countCompany}" size=91
+        <input type="text" name="${type}company${countCompany}" size=91
                value="${company.website}">
     </dd>
 </dl>

@@ -9,13 +9,12 @@
     <meta http-equiv="content-type" content="text/html; charset=UTF-8">
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="css/edit.css">
-    <jsp:useBean id="resume" type="ru.javawebinar.basejava.model.Resume" scope="request"/>
     <title>Резюме ${resume.fullName}</title>
 </head>
 <body>
 <jsp:include page="fragments/header.jsp"/>
 <section>
-    <form method="post" action="resume" name="form" enctype="application/x-www-form-urlencoded">
+    <form method="post" action="resume" enctype="application/x-www-form-urlencoded">
         <input type="hidden" name="uuid" value="${resume.uuid}">
         <dl>
             <dt>Имя <span class="name">(обязательно)</span></dt>
@@ -25,35 +24,41 @@
         <c:forEach var="type" items="${ContactType.values()}">
             <dl>
                 <dt>${type.title}</dt>
-                <dd><input type="text" name="${type.name()}" size=45 value="${resume.getContact(type)}"></dd>
+                <dd><input type="text" name="${type}" size=45 value="${resume.getContact(type)}"></dd>
             </dl>
         </c:forEach>
         <h3>Информация:</h3>
         <c:forEach var="type" items="${SectionType.values()}">
-            <c:set var="typeName" value="${type.name()}"/>
+            <c:set var="title" value="${type.title}"/>
             <c:set var="section" value="${resume.getSection(type)}"/>
             <c:choose>
-                <c:when test="${'OBJECTIVE'.equals(typeName) || 'PERSONAL'.equals(typeName)}">
+                <c:when test="${type == 'OBJECTIVE'}">
                     <dl>
-                        <dt>${type.title}</dt>
-                        <dd><input type="text" name="${typeName}" size=91 value="${section.text}"></dd>
+                        <dt>${title}</dt>
+                        <dd><input type="text" name="${type}" size=91 value="${section.text}"></dd>
                     </dl>
                 </c:when>
-                <c:when test="${'ACHIEVEMENT'.equals(typeName) || 'QUALIFICATIONS'.equals(typeName)}">
+                <c:when test="${type == 'PERSONAL'}">
+                    <dl>
+                        <dt>${title}</dt>
+                        <dd><textarea name="${type}" cols="85" rows="4">${section.text}</textarea></dd>
+                    </dl>
+                </c:when>
+                <c:when test="${type == 'ACHIEVEMENT' || type == 'QUALIFICATIONS'}">
                     <c:set var="items" value="${HtmlUtil.getString(section.items)}"/>
                     <dl>
-                        <dt>${type.title}</dt>
-                        <dd><textarea name="${typeName}" cols="85" rows="6">${items}</textarea></dd>
+                        <dt>${title}</dt>
+                        <dd><textarea name="${type}" cols="85" rows="6">${items}</textarea></dd>
                     </dl>
                 </c:when>
-                <c:when test="${'EXPERIENCE'.equals(typeName) || 'EDUCATION'.equals(typeName)}">
-                    <h3>${type.title}:</h3>
-                    <input type="hidden" name="${typeName}" value="${typeName}">
+                <c:when test="${type == 'EXPERIENCE' || type == 'EDUCATION'}">
+                    <h3>${title}:</h3>
+                    <input type="hidden" name="${type}" value="${type}">
                     <c:set var="countCompany" value="0"/>
                     <c:set var="countPeriod" value="0"/>
                     <%@ include file="fragments/company.jsp" %>
                     <%@ include file="fragments/period.jsp" %>
-                    <input type="hidden" name="${typeName}company${countCompany}periodSize" value="${countPeriod}">
+                    <input type="hidden" name="${type}company${countCompany}periodSize" value="${countPeriod}">
                     <c:forEach var="company" items="${section.companies}">
                         <c:set var="countPeriod" value="0"/>
                         <%@ include file="fragments/company.jsp" %>
@@ -61,9 +66,9 @@
                         <c:forEach var="period" items="${company.periods}">
                             <%@ include file="fragments/period.jsp" %>
                         </c:forEach>
-                        <input type="hidden" name="${typeName}company${countCompany}periodSize" value="${countPeriod}">
+                        <input type="hidden" name="${type}company${countCompany}periodSize" value="${countPeriod}">
                     </c:forEach>
-                    <input type="hidden" name="${typeName}companySize" value="${countCompany}">
+                    <input type="hidden" name="${type}companySize" value="${countCompany}">
                 </c:when>
             </c:choose>
         </c:forEach>
