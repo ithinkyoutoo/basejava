@@ -17,6 +17,7 @@ public class Resume implements Serializable {
 
     @Serial
     private static final long serialVersionUID = 1L;
+    public static final Resume EMPTY = new Resume();
 
     private String uuid;
     private String fullName;

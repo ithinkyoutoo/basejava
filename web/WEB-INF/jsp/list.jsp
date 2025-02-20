@@ -15,7 +15,7 @@
             <th>Имя</th>
             <th>E-mail</th>
             <th></th>
-            <th><a href="resume?action=edit"><img src="img/add.png"></a></th>
+            <th><a href="resume?action=add"><img src="img/add.png"></a></th>
         </tr>
         <c:forEach var="resume" items="${resumes}">
             <tr>

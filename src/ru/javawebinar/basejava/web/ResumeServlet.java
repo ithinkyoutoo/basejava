@@ -42,7 +42,8 @@ public class ResumeServlet extends HttpServlet {
                 response.sendRedirect("resume");
                 return;
             }
-            case "view", "edit" -> r = uuid != null ? storage.get(uuid) : new Resume("", "");
+            case "add" -> r = Resume.EMPTY;
+            case "view", "edit" -> r = storage.get(uuid);
             default -> throw new IllegalArgumentException("Action " + action + " is illegal");
         }
         request.setAttribute("resume", r);
@@ -73,10 +74,10 @@ public class ResumeServlet extends HttpServlet {
     private void editContacts(Resume r, HttpServletRequest request) {
         for (ContactType type : ContactType.values()) {
             String value = removeSpace(request.getParameter(type.name()));
-            if (!value.isEmpty()) {
-                r.setContact(type, value);
-            } else {
+            if (value.isEmpty()) {
                 r.getContacts().remove(type);
+            } else {
+                r.setContact(type, value);
             }
         }
     }
@@ -84,21 +85,21 @@ public class ResumeServlet extends HttpServlet {
     private void editSections(Resume r, HttpServletRequest request) {
         for (SectionType type : SectionType.values()) {
             String value = request.getParameter(type.name());
-            if (!value.isBlank()) {
+            if (value.isBlank()) {
+                r.getSections().remove(type);
+            } else {
                 switch (type) {
                     case OBJECTIVE, PERSONAL -> r.setSection(type, new TextSection(removeSpace(value)));
                     case ACHIEVEMENT, QUALIFICATIONS -> r.setSection(type, new ListSection(getList(value)));
                     case EXPERIENCE, EDUCATION -> {
                         List<Company> companies = getCompanies(request, type);
-                        if (!companies.isEmpty()) {
-                            r.setSection(type, new CompanySection(companies));
-                        } else {
+                        if (companies.isEmpty()) {
                             r.getSections().remove(type);
+                        } else {
+                            r.setSection(type, new CompanySection(companies));
                         }
                     }
                 }
-            } else {
-                r.getSections().remove(type);
             }
         }
     }
@@ -122,11 +123,10 @@ public class ResumeServlet extends HttpServlet {
         int size = Integer.parseInt(request.getParameter(type + "company" + companyNum + "periodSize"));
         for (int i = 1; i <= size; i++) {
             String[] values = request.getParameterValues(type + "company" + companyNum + "period" + i);
-            String date = values[0];
-            if (!date.isEmpty()) {
-                LocalDate begin = DateUtil.parse(date);
+            String title = removeSpace(values[2]);
+            if (!title.isEmpty()) {
+                LocalDate begin = DateUtil.parse(values[0]);
                 LocalDate end = DateUtil.parse(values[1]);
-                String title = removeSpace(values[2]);
                 List<String> description = getList(values[3]);
                 periods.add(new Company.Period(begin, end, title, description));
             }
