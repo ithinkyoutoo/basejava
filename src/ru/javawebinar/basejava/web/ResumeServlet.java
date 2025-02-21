@@ -57,7 +57,7 @@ public class ResumeServlet extends HttpServlet {
             throws ServletException, IOException {
         request.setCharacterEncoding("UTF-8");
         String uuid = request.getParameter("uuid");
-        String fullName = removeSpace(request.getParameter("fullName"));
+        String fullName = replaceSpaces(request.getParameter("fullName"), " ");
         boolean isNewResume = uuid.isEmpty();
         Resume r = isNewResume ? new Resume(fullName) : storage.get(uuid);
         r.setFullName(fullName);
@@ -73,7 +73,7 @@ public class ResumeServlet extends HttpServlet {
 
     private void editContacts(Resume r, HttpServletRequest request) {
         for (ContactType type : ContactType.values()) {
-            String value = removeSpace(request.getParameter(type.name()));
+            String value = replaceSpaces(request.getParameter(type.name()), "");
             if (value.isEmpty()) {
                 r.getContacts().remove(type);
             } else {
@@ -89,7 +89,7 @@ public class ResumeServlet extends HttpServlet {
                 r.getSections().remove(type);
             } else {
                 switch (type) {
-                    case OBJECTIVE, PERSONAL -> r.setSection(type, new TextSection(removeSpace(value)));
+                    case OBJECTIVE, PERSONAL -> r.setSection(type, new TextSection(replaceSpaces(value, " ")));
                     case ACHIEVEMENT, QUALIFICATIONS -> r.setSection(type, new ListSection(getList(value)));
                     case EXPERIENCE, EDUCATION -> {
                         List<Company> companies = getCompanies(request, type);
@@ -109,9 +109,9 @@ public class ResumeServlet extends HttpServlet {
         int size = Integer.parseInt(request.getParameter(type + "companySize"));
         for (int i = 1; i <= size; i++) {
             String[] values = request.getParameterValues(type + "company" + i);
-            String name = removeSpace(values[0]);
+            String name = replaceSpaces(values[0], " ");
             if (!name.isEmpty()) {
-                String website = removeSpace(values[1]);
+                String website = replaceSpaces(values[1], "");
                 companies.add(new Company(name, website, getPeriods(request, type, i)));
             }
         }
@@ -123,7 +123,7 @@ public class ResumeServlet extends HttpServlet {
         int size = Integer.parseInt(request.getParameter(type + "company" + companyNum + "periodSize"));
         for (int i = 1; i <= size; i++) {
             String[] values = request.getParameterValues(type + "company" + companyNum + "period" + i);
-            String title = removeSpace(values[2]);
+            String title = replaceSpaces(values[2], " ");
             if (!title.isEmpty()) {
                 LocalDate begin = DateUtil.parse(values[0]);
                 LocalDate end = DateUtil.parse(values[1]);
@@ -134,13 +134,13 @@ public class ResumeServlet extends HttpServlet {
         return periods;
     }
 
-    private String removeSpace(String str) {
-        return str.strip().replaceAll("\\s+", " ");
+    private String replaceSpaces(String str, String space) {
+        return str.strip().replaceAll("\\s+", space);
     }
 
     private List<String> getList(String str) {
         return str.lines()
-                .map(this::removeSpace)
+                .map(s -> replaceSpaces(s, " "))
                 .filter(s -> !s.isEmpty())
                 .toList();
     }
