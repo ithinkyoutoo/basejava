@@ -18,6 +18,7 @@ public class Company implements Serializable {
 
     @Serial
     private static final long serialVersionUID = 1L;
+    public static final Company EMPTY = new Company("", Period.EMPTY);
 
     private String name;
     private String website;
@@ -103,6 +104,8 @@ public class Company implements Serializable {
 
     @XmlAccessorType(XmlAccessType.FIELD)
     public static class Period implements Serializable {
+
+        public static final Period EMPTY = new Period();
 
         @XmlJavaTypeAdapter(XmlLocalDateAdapter.class)
         private LocalDate beginDate;

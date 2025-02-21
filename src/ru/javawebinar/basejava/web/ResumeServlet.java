@@ -43,7 +43,8 @@ public class ResumeServlet extends HttpServlet {
                 return;
             }
             case "add" -> r = Resume.EMPTY;
-            case "view", "edit" -> r = storage.get(uuid);
+            case "view" -> r = storage.get(uuid);
+            case "edit" -> r = addEmpty(storage.get(uuid));
             default -> throw new IllegalArgumentException("Action " + action + " is illegal");
         }
         request.setAttribute("resume", r);
@@ -57,7 +58,7 @@ public class ResumeServlet extends HttpServlet {
             throws ServletException, IOException {
         request.setCharacterEncoding("UTF-8");
         String uuid = request.getParameter("uuid");
-        String fullName = removeSpace(request.getParameter("fullName"));
+        String fullName = replaceSpaces(request.getParameter("fullName"), " ");
         boolean isNewResume = uuid.isEmpty();
         Resume r = isNewResume ? new Resume(fullName) : storage.get(uuid);
         r.setFullName(fullName);
@@ -71,9 +72,27 @@ public class ResumeServlet extends HttpServlet {
         response.sendRedirect("resume");
     }
 
+    private Resume addEmpty(Resume r) {
+        for (SectionType type : new SectionType[]{SectionType.EXPERIENCE, SectionType.EDUCATION}) {
+            CompanySection section = (CompanySection) r.getSection(type);
+            List<Company> emptyFirstCompany = new ArrayList<>();
+            emptyFirstCompany.add(Company.EMPTY);
+            if (section != null) {
+                for (Company company : section.getCompanies()) {
+                    List<Company.Period> emptyFirstPeriod = new ArrayList<>();
+                    emptyFirstPeriod.add(Company.Period.EMPTY);
+                    emptyFirstPeriod.addAll(company.getPeriods());
+                    emptyFirstCompany.add(new Company(company.getName(), company.getWebsite(), emptyFirstPeriod));
+                }
+            }
+            r.setSection(type, new CompanySection(emptyFirstCompany));
+        }
+        return r;
+    }
+
     private void editContacts(Resume r, HttpServletRequest request) {
         for (ContactType type : ContactType.values()) {
-            String value = removeSpace(request.getParameter(type.name()));
+            String value = replaceSpaces(request.getParameter(type.name()), "");
             if (value.isEmpty()) {
                 r.getContacts().remove(type);
             } else {
@@ -84,63 +103,65 @@ public class ResumeServlet extends HttpServlet {
 
     private void editSections(Resume r, HttpServletRequest request) {
         for (SectionType type : SectionType.values()) {
-            String value = request.getParameter(type.name());
-            if (value.isBlank()) {
+            String typeName = type.name();
+            String value = request.getParameter(typeName);
+            String[] names = request.getParameterValues(typeName);
+            if (value.isBlank() && isEmpty(names)) {
                 r.getSections().remove(type);
             } else {
                 switch (type) {
-                    case OBJECTIVE, PERSONAL -> r.setSection(type, new TextSection(removeSpace(value)));
+                    case OBJECTIVE, PERSONAL -> r.setSection(type, new TextSection(replaceSpaces(value, " ")));
                     case ACHIEVEMENT, QUALIFICATIONS -> r.setSection(type, new ListSection(getList(value)));
-                    case EXPERIENCE, EDUCATION -> {
-                        List<Company> companies = getCompanies(request, type);
-                        if (companies.isEmpty()) {
-                            r.getSections().remove(type);
-                        } else {
-                            r.setSection(type, new CompanySection(companies));
-                        }
-                    }
+                    case EXPERIENCE, EDUCATION -> r.setSection(type, newCompanySection(typeName, names, request));
                 }
             }
         }
     }
 
-    private List<Company> getCompanies(HttpServletRequest request, SectionType type) {
+    private CompanySection newCompanySection(String typeName, String[] names, HttpServletRequest request) {
         List<Company> companies = new ArrayList<>();
-        int size = Integer.parseInt(request.getParameter(type + "companySize"));
-        for (int i = 1; i <= size; i++) {
-            String[] values = request.getParameterValues(type + "company" + i);
-            String name = removeSpace(values[0]);
+        String[] websites = request.getParameterValues(typeName + "website");
+        for (int i = 0; i < names.length; i++) {
+            String name = replaceSpaces(names[i], " ");
             if (!name.isEmpty()) {
-                String website = removeSpace(values[1]);
-                companies.add(new Company(name, website, getPeriods(request, type, i)));
+                String website = replaceSpaces(websites[i], "");
+                List<Company.Period> periods = new ArrayList<>();
+                String pfx = typeName + i;
+                String[] beginDates = request.getParameterValues(pfx + "beginDate");
+                String[] endDates = request.getParameterValues(pfx + "endDate");
+                String[] titles = request.getParameterValues(pfx + "title");
+                String[] descriptions = request.getParameterValues(pfx + "description");
+                for (int j = 0; j < titles.length; j++) {
+                    String title = replaceSpaces(titles[j], " ");
+                    if (!title.isEmpty()) {
+                        LocalDate begin = DateUtil.parse(beginDates[j]);
+                        LocalDate end = DateUtil.parse(endDates[j]);
+                        List<String> description = getList(descriptions[j]);
+                        periods.add(new Company.Period(begin, end, title, description));
+                    }
+                }
+                companies.add(new Company(name, website, periods));
             }
         }
-        return companies;
+        return new CompanySection(companies);
     }
 
-    private List<Company.Period> getPeriods(HttpServletRequest request, SectionType type, int companyNum) {
-        List<Company.Period> periods = new ArrayList<>();
-        int size = Integer.parseInt(request.getParameter(type + "company" + companyNum + "periodSize"));
-        for (int i = 1; i <= size; i++) {
-            String[] values = request.getParameterValues(type + "company" + companyNum + "period" + i);
-            String title = removeSpace(values[2]);
-            if (!title.isEmpty()) {
-                LocalDate begin = DateUtil.parse(values[0]);
-                LocalDate end = DateUtil.parse(values[1]);
-                List<String> description = getList(values[3]);
-                periods.add(new Company.Period(begin, end, title, description));
+    private String replaceSpaces(String str, String space) {
+        return str.strip().replaceAll("\\s+", space);
+    }
+
+    private boolean isEmpty(String[] names) {
+        for (String name : names) {
+            if (!name.isBlank()) {
+                return false;
             }
         }
-        return periods;
-    }
-
-    private String removeSpace(String str) {
-        return str.strip().replaceAll("\\s+", " ");
+        return true;
     }
 
     private List<String> getList(String str) {
         return str.lines()
-                .map(this::removeSpace)
+                .map(s -> replaceSpaces(s, " "))
                 .filter(s -> !s.isEmpty())
                 .toList();
     }

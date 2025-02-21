@@ -19,6 +19,11 @@ public class Resume implements Serializable {
     private static final long serialVersionUID = 1L;
     public static final Resume EMPTY = new Resume();
 
+    static {
+        EMPTY.setSection(SectionType.EXPERIENCE, CompanySection.EMPTY);
+        EMPTY.setSection(SectionType.EDUCATION, CompanySection.EMPTY);
+    }
+
     private String uuid;
     private String fullName;
     private Map<ContactType, String> contacts = new EnumMap<>(ContactType.class);

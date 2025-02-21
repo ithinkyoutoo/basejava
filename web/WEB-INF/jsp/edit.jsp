@@ -53,22 +53,46 @@
                 </c:when>
                 <c:when test="${type == 'EXPERIENCE' || type == 'EDUCATION'}">
                     <h3>${title}:</h3>
-                    <input type="hidden" name="${type}" value="${type}">
-                    <c:set var="countCompany" value="0"/>
-                    <c:set var="countPeriod" value="0"/>
-                    <%@ include file="fragments/company.jsp" %>
-                    <%@ include file="fragments/period.jsp" %>
-                    <input type="hidden" name="${type}company${countCompany}periodSize" value="${countPeriod}">
-                    <c:forEach var="company" items="${section.companies}">
-                        <c:set var="countPeriod" value="0"/>
-                        <%@ include file="fragments/company.jsp" %>
-                        <%@ include file="fragments/period.jsp" %>
+                    <c:forEach var="company" items="${section.companies}" varStatus="counter">
+                        <dl class="company">
+                            <dt class="company">Организация</dt>
+                            <dd class="company">
+                                <input type="text" name="${type}" size=91 value="${company.name}">
+                            </dd>
+                            <dt class="company">Сайт</dt>
+                            <dd class="company">
+                                <input type="text" name="${type}website" size=91 value="${company.website}">
+                            </dd>
+                        </dl>
                         <c:forEach var="period" items="${company.periods}">
-                            <%@ include file="fragments/period.jsp" %>
+                            <dl class="period">
+                                <dt class="period">Период <span class="date">(мм/гггг)</span></dt>
+                                <dd class="period">
+                                    <label>начало</label>
+                                    <input type="text" name="${type}${counter.index}beginDate" size=10
+                                           value="${DateUtil.format(period.beginDate)}"
+                                           pattern="^(0[1-9]|1[0-2])\/(19|20)[0-9]{2}$">
+                                </dd>
+                                <dd class="period">
+                                    <label>окончание</label>
+                                    <input type="text" name="${type}${counter.index}endDate" size=10
+                                           value="${DateUtil.format(period.endDate)}"
+                                           pattern="^(0[1-9]|1[0-2])\/(19|20)[0-9]{2}$|(н. в.)">
+                                </dd>
+                                <br/>
+                                <dt class="period">Должность</dt>
+                                <dd class="period">
+                                    <input type="text" name="${type}${counter.index}title" size=91
+                                           value="${period.title}">
+                                </dd>
+                                <dt class="period">Описание</dt>
+                                <dd class="period">
+                                    <textarea name="${type}${counter.index}description" cols="85"
+                                              rows="6">${HtmlUtil.getString(period.description)}</textarea>
+                                </dd>
+                            </dl>
                         </c:forEach>
-                        <input type="hidden" name="${type}company${countCompany}periodSize" value="${countPeriod}">
                     </c:forEach>
-                    <input type="hidden" name="${type}companySize" value="${countCompany}">
                 </c:when>
             </c:choose>
         </c:forEach>
